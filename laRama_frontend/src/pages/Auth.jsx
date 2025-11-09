@@ -11,6 +11,10 @@ const Auth = () => {
   const location = useLocation();
   const { loginUser, register, loading } = useAuth();
 
+  // Form state management
+  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [signupForm, setSignupForm] = useState({ name: "", email: "", password: "" });
+
   const redirectTo = location.state?.from?.pathname || "/dashboard";
 
   const heading = useMemo(
@@ -31,9 +35,11 @@ const Auth = () => {
     setError("");
     setIsSubmitting(true);
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email")?.toString().trim();
-    const password = formData.get("password")?.toString();
+    const email = loginForm.email.trim();
+    const password = loginForm.password;
+
+    console.log("Login attempt with:", { email, password: password ? "***" : "empty" });
+    console.log("Form values:", loginForm);
 
     if (!email || !password) {
       setError("Please fill in all fields");
@@ -41,16 +47,27 @@ const Auth = () => {
       return;
     }
 
+    // Basic email validation
+    if (!email.includes('@')) {
+      setError("Please enter a valid email address");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const result = await loginUser({ email, password });
+      console.log("Login result:", result);
+      
       if (result.success) {
+        // Reset form on successful login
+        setLoginForm({ email: "", password: "" });
         navigate(redirectTo, { replace: true });
       } else {
-        setError(result.message || "Login failed");
+        setError(result.message || "Login failed. Please check your credentials.");
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("An unexpected error occurred");
+      setError("Unable to connect to server. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -61,13 +78,22 @@ const Auth = () => {
     setError("");
     setIsSubmitting(true);
 
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name")?.toString().trim();
-    const email = formData.get("signup-email")?.toString().trim();
-    const password = formData.get("signup-password")?.toString();
+    const name = signupForm.name.trim();
+    const email = signupForm.email.trim();
+    const password = signupForm.password;
+
+    console.log("Signup attempt with:", { name, email, password: password ? "***" : "empty" });
+    console.log("Form values:", signupForm);
 
     if (!name || !email || !password) {
       setError("Please fill in all fields");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Basic email validation
+    if (!email.includes('@')) {
+      setError("Please enter a valid email address");
       setIsSubmitting(false);
       return;
     }
@@ -80,14 +106,18 @@ const Auth = () => {
 
     try {
       const result = await register({ name, email, password });
+      console.log("Registration result:", result);
+      
       if (result.success) {
+        // Reset form on successful registration
+        setSignupForm({ name: "", email: "", password: "" });
         navigate(redirectTo, { replace: true });
       } else {
-        setError(result.message || "Registration failed");
+        setError(result.message || "Registration failed. Please try again.");
       }
     } catch (err) {
       console.error("Registration error:", err);
-      setError("An unexpected error occurred");
+      setError("Unable to connect to server. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -98,6 +128,9 @@ const Auth = () => {
   const handleModeChange = (newMode) => {
     setMode(newMode);
     setError("");
+    // Reset form data when switching modes
+    setLoginForm({ email: "", password: "" });
+    setSignupForm({ name: "", email: "", password: "" });
   };
 
   return (
@@ -157,11 +190,33 @@ const Auth = () => {
             <div className="auth-form__fields">
               <label className="auth-field">
                 <span>Email address</span>
-                <input type="email" name="email" autoComplete="email" required placeholder="you@example.com" disabled={isSubmitting || loading} />
+                <input 
+                  type="email" 
+                  name="login-email" 
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+                  autoComplete="new-password"
+                  autoFill="off"
+                  required 
+                  placeholder="you@example.com" 
+                  disabled={isSubmitting || loading}
+                  key="login-email"
+                />
               </label>
               <label className="auth-field">
                 <span>Password</span>
-                <input type="password" name="password" autoComplete="current-password" required placeholder="Your password" disabled={isSubmitting || loading} />
+                <input 
+                  type="password" 
+                  name="login-password" 
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                  autoComplete="new-password"
+                  autoFill="off"
+                  required 
+                  placeholder="Your password" 
+                  disabled={isSubmitting || loading}
+                  key="login-password"
+                />
               </label>
             </div>
             <button type="submit" className="auth-form__submit" disabled={isSubmitting || loading}>
@@ -181,15 +236,48 @@ const Auth = () => {
             <div className="auth-form__fields">
               <label className="auth-field">
                 <span>Full name</span>
-                <input type="text" name="name" autoComplete="name" required placeholder="Alex Taylor" disabled={isSubmitting || loading} />
+                <input 
+                  type="text" 
+                  name="signup-name" 
+                  value={signupForm.name}
+                  onChange={(e) => setSignupForm(prev => ({ ...prev, name: e.target.value }))}
+                  autoComplete="new-password" 
+                  autoFill="off"
+                  required 
+                  placeholder="Alex Taylor" 
+                  disabled={isSubmitting || loading}
+                  key="signup-name"
+                />
               </label>
               <label className="auth-field">
                 <span>Email address</span>
-                <input type="email" name="signup-email" autoComplete="email" required placeholder="you@example.com" disabled={isSubmitting || loading} />
+                <input 
+                  type="email" 
+                  name="signup-email" 
+                  value={signupForm.email}
+                  onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
+                  autoComplete="new-password" 
+                  autoFill="off"
+                  required 
+                  placeholder="you@example.com" 
+                  disabled={isSubmitting || loading}
+                  key="signup-email"
+                />
               </label>
               <label className="auth-field">
                 <span>Password</span>
-                <input type="password" name="signup-password" autoComplete="new-password" required placeholder="Create a secure password (min 6 characters)" disabled={isSubmitting || loading} />
+                <input 
+                  type="password" 
+                  name="signup-password" 
+                  value={signupForm.password}
+                  onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
+                  autoComplete="new-password" 
+                  autoFill="off"
+                  required 
+                  placeholder="Create a secure password (min 6 characters)" 
+                  disabled={isSubmitting || loading}
+                  key="signup-password"
+                />
               </label>
             </div>
             <button type="submit" className="auth-form__submit" disabled={isSubmitting || loading}>

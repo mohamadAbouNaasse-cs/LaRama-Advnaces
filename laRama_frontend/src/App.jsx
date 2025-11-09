@@ -60,9 +60,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen h-full flex flex-col app-surface overflow-x-hidden relative app-container w-full max-w-full">
+        <div className="min-h-screen flex flex-col app-surface">
           <Header theme={theme} onToggleTheme={toggleTheme} isDark={isDark} />
-          <main className="flex-1 overflow-x-hidden">
+          <main className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
