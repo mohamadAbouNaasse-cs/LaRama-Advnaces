@@ -21,7 +21,7 @@ const Products = () => {
         
         // Fetch products and categories in parallel
         const [productsResponse, categoriesResponse] = await Promise.all([
-          apiService.getProducts(),
+          apiService.getProducts({ limit: 100 }), // Get all products (increase limit to ensure we get everything)
           apiService.getCategories().catch(() => ({ success: false })) // Categories might not exist yet
         ]);
 
@@ -29,26 +29,32 @@ const Products = () => {
           setProducts(productsResponse.data.products || []);
         }
 
-        // Set up basic categories structure
-        let categoryList = [{ id: 'all', name: 'All Products' }];
+        // Set up categories structure with actual data
+        let categoryList = [{ id: 'all', name: 'All Products', count: productsResponse.data.products?.length || 0 }];
         
         if (categoriesResponse.success && categoriesResponse.data.categories) {
           const backendCategories = categoriesResponse.data.categories.map(cat => ({
             id: cat.category,
-            name: cat.category.charAt(0).toUpperCase() + cat.category.slice(1).replace(/([A-Z])/g, ' $1'),
-            count: cat.product_count
+            name: cat.category,
+            count: parseInt(cat.product_count)
           }));
           categoryList = [...categoryList, ...backendCategories];
         } else {
-          // Fallback categories matching your original design
-          categoryList = [
-            { id: 'all', name: 'All Products' },
-            { id: 'Purses', name: 'Purses' },
-            { id: 'Decorations', name: 'Letters & Decorations' },
-            { id: 'Neckties', name: 'Neckties' },
-            { id: 'Prayer Beads', name: 'Prayer Beads' },
-            { id: 'Phone Cases', name: 'Phone Cases' },
-          ];
+          // Generate categories from products if API fails
+          const productCategories = {};
+          (productsResponse.data.products || []).forEach(product => {
+            if (product.category) {
+              productCategories[product.category] = (productCategories[product.category] || 0) + 1;
+            }
+          });
+          
+          const generatedCategories = Object.entries(productCategories).map(([category, count]) => ({
+            id: category,
+            name: category,
+            count: count
+          }));
+          
+          categoryList = [...categoryList, ...generatedCategories];
         }
         
         setCategories(categoryList);
@@ -128,6 +134,12 @@ const Products = () => {
 
   const fallbackSvg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI0YwRTREMyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iMC4zNWVtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzVDNEIzRCI+UHJvZHVjdCBJbWFnZTwvdGV4dD48L3N2Zz4=';
 
+  // Debug logging
+  console.log('Products state:', products.length);
+  console.log('Active category:', activeCategory);
+  console.log('Filtered products:', filteredProducts.length);
+  console.log('Available categories:', categories);
+
   if (loading) {
     return (
       <div className="min-h-screen py-12 px-4 bg-[#FAF7F3] flex items-center justify-center">
@@ -156,6 +168,7 @@ const Products = () => {
               {error}
             </div>
           )}
+
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mb-12">
@@ -169,7 +182,7 @@ const Products = () => {
                   : 'bg-[#F0E4D3] text-[#5C4B3D] hover:bg-[#DCC5B2]'
               }`}
             >
-              {category.name} {category.count && category.id !== 'all' && `(${category.count})`}
+              {category.name} ({category.count || 0})
             </button>
           ))}
         </div>
