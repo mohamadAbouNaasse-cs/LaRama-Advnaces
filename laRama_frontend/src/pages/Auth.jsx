@@ -11,9 +11,10 @@ const Auth = () => {
   const location = useLocation();
   const { loginUser, register, loading } = useAuth();
 
-  // Form state management
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
-  const [signupForm, setSignupForm] = useState({ name: "", email: "", password: "" });
+  // Simple form state - rebuild from scratch
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   const redirectTo = location.state?.from?.pathname || "/dashboard";
 
@@ -35,32 +36,32 @@ const Auth = () => {
     setError("");
     setIsSubmitting(true);
 
-    const email = loginForm.email.trim();
-    const password = loginForm.password;
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
 
-    console.log("Login attempt with:", { email, password: password ? "***" : "empty" });
-    console.log("Form values:", loginForm);
+    console.log("Login attempt with:", { email: trimmedEmail, password: trimmedPassword ? "***" : "empty" });
 
-    if (!email || !password) {
+    if (!trimmedEmail || !trimmedPassword) {
       setError("Please fill in all fields");
       setIsSubmitting(false);
       return;
     }
 
     // Basic email validation
-    if (!email.includes('@')) {
+    if (!trimmedEmail.includes('@')) {
       setError("Please enter a valid email address");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const result = await loginUser({ email, password });
+      const result = await loginUser({ email: trimmedEmail, password: trimmedPassword });
       console.log("Login result:", result);
       
       if (result.success) {
         // Reset form on successful login
-        setLoginForm({ email: "", password: "" });
+        setEmail("");
+        setPassword("");
         navigate(redirectTo, { replace: true });
       } else {
         setError(result.message || "Login failed. Please check your credentials.");
@@ -78,39 +79,40 @@ const Auth = () => {
     setError("");
     setIsSubmitting(true);
 
-    const name = signupForm.name.trim();
-    const email = signupForm.email.trim();
-    const password = signupForm.password;
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
 
-    console.log("Signup attempt with:", { name, email, password: password ? "***" : "empty" });
-    console.log("Form values:", signupForm);
+    console.log("Signup attempt with:", { name: trimmedName, email: trimmedEmail, password: trimmedPassword ? "***" : "empty" });
 
-    if (!name || !email || !password) {
+    if (!trimmedName || !trimmedEmail || !trimmedPassword) {
       setError("Please fill in all fields");
       setIsSubmitting(false);
       return;
     }
 
     // Basic email validation
-    if (!email.includes('@')) {
+    if (!trimmedEmail.includes('@')) {
       setError("Please enter a valid email address");
       setIsSubmitting(false);
       return;
     }
 
-    if (password.length < 6) {
+    if (trimmedPassword.length < 6) {
       setError("Password must be at least 6 characters long");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const result = await register({ name, email, password });
+      const result = await register({ name: trimmedName, email: trimmedEmail, password: trimmedPassword });
       console.log("Registration result:", result);
       
       if (result.success) {
         // Reset form on successful registration
-        setSignupForm({ name: "", email: "", password: "" });
+        setName("");
+        setEmail("");
+        setPassword("");
         navigate(redirectTo, { replace: true });
       } else {
         setError(result.message || "Registration failed. Please try again.");
@@ -129,8 +131,9 @@ const Auth = () => {
     setMode(newMode);
     setError("");
     // Reset form data when switching modes
-    setLoginForm({ email: "", password: "" });
-    setSignupForm({ name: "", email: "", password: "" });
+    setEmail("");
+    setPassword("");
+    setName("");
   };
 
   return (
@@ -193,14 +196,12 @@ const Auth = () => {
                 <input 
                   type="email" 
                   name="login-email" 
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                  autoComplete="new-password"
-                  autoFill="off"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
                   required 
                   placeholder="you@example.com" 
                   disabled={isSubmitting || loading}
-                  key="login-email"
                 />
               </label>
               <label className="auth-field">
@@ -208,14 +209,12 @@ const Auth = () => {
                 <input 
                   type="password" 
                   name="login-password" 
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                  autoComplete="new-password"
-                  autoFill="off"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
                   required 
                   placeholder="Your password" 
                   disabled={isSubmitting || loading}
-                  key="login-password"
                 />
               </label>
             </div>
@@ -239,14 +238,12 @@ const Auth = () => {
                 <input 
                   type="text" 
                   name="signup-name" 
-                  value={signupForm.name}
-                  onChange={(e) => setSignupForm(prev => ({ ...prev, name: e.target.value }))}
-                  autoComplete="new-password" 
-                  autoFill="off"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="off" 
                   required 
                   placeholder="Alex Taylor" 
                   disabled={isSubmitting || loading}
-                  key="signup-name"
                 />
               </label>
               <label className="auth-field">
@@ -254,14 +251,12 @@ const Auth = () => {
                 <input 
                   type="email" 
                   name="signup-email" 
-                  value={signupForm.email}
-                  onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
-                  autoComplete="new-password" 
-                  autoFill="off"
+                  value={mode === "signup" ? email : ""}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off" 
                   required 
                   placeholder="you@example.com" 
                   disabled={isSubmitting || loading}
-                  key="signup-email"
                 />
               </label>
               <label className="auth-field">
@@ -269,14 +264,12 @@ const Auth = () => {
                 <input 
                   type="password" 
                   name="signup-password" 
-                  value={signupForm.password}
-                  onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
-                  autoComplete="new-password" 
-                  autoFill="off"
+                  value={mode === "signup" ? password : ""}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off" 
                   required 
                   placeholder="Create a secure password (min 6 characters)" 
                   disabled={isSubmitting || loading}
-                  key="signup-password"
                 />
               </label>
             </div>
