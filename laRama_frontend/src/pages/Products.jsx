@@ -40,57 +40,44 @@ const Products = () => {
           }));
           categoryList = [...categoryList, ...backendCategories];
         } else {
-          // Fallback to static categories if backend doesn't have any
+          // Fallback categories matching your original design
           categoryList = [
             { id: 'all', name: 'All Products' },
-            { id: 'Necklaces', name: 'Necklaces' },
-            { id: 'Bracelets', name: 'Bracelets' },
-            { id: 'Earrings', name: 'Earrings' },
-            { id: 'Anklets', name: 'Anklets' },
+            { id: 'Purses', name: 'Purses' },
+            { id: 'Decorations', name: 'Letters & Decorations' },
+            { id: 'Neckties', name: 'Neckties' },
+            { id: 'Prayer Beads', name: 'Prayer Beads' },
+            { id: 'Phone Cases', name: 'Phone Cases' },
           ];
         }
         
         setCategories(categoryList);
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError('Failed to load products. Using sample data.');
+        setError('Failed to load products from server. Showing sample data.');
         
-        // Fallback to sample data structure matching backend format
+        // Enhanced fallback with your original beautiful products
         setProducts([
-          {
-            id: '1',
-            name: 'Handcrafted Beaded Necklace - Blue Ocean',
-            description: 'Beautiful blue and white beaded necklace inspired by ocean waves',
-            price: 45.99,
-            image_url: '/images/necklace-blue-ocean.jpg',
-            category: 'Necklaces',
-            stock_quantity: 15
-          },
-          {
-            id: '2', 
-            name: 'Vintage Style Beaded Bracelet',
-            description: 'Elegant vintage-inspired beaded bracelet with gold accents',
-            price: 28.50,
-            image_url: '/images/bracelet-vintage.jpg',
-            category: 'Bracelets',
-            stock_quantity: 20
-          },
-          {
-            id: '3',
-            name: 'Colorful Beaded Earrings Set',
-            description: 'Set of vibrant multicolored beaded earrings',
-            price: 22.00,
-            image_url: '/images/earrings-colorful.jpg',
-            category: 'Earrings',
-            stock_quantity: 25
-          }
+          { id: '1', name: 'Şık 🖤', category: 'Purses', price: 50.00, image_url: '/images/purses/black.jpg', description: 'Şık embodies effortless style. Its sleek lines and refined details whisper confidence, turning every glance into admiration. More than an accessory—it\'s elegance you can carry. ✨🖤', stock_quantity: 15 },
+          { id: '2', name: 'Noiré', category: 'Purses', price: 45.00, image_url: '/images/purses/black-hq.jpg', description: 'Noiré is the essence of timeless elegance. Its black beads mirror midnight skies, while golden details whisper luxury. A bag for women who carry mystery with confidence. 🖤🌙✨', stock_quantity: 12 },
+          { id: '3', name: 'Aurora 🌸', category: 'Purses', price: 30.00, image_url: '/images/purses/fa5ame.jpg', description: 'Aurora is a bag born from dawn\'s first light, where pastel pearls capture the glow of a new beginning. It carries elegance with every touch, like a secret whispered by the morning sky. 🌸✨', stock_quantity: 18 },
+          { id: '4', name: 'Prisma', category: 'Purses', price: 25.00, image_url: '/images/purses/kid.jpg', description: 'Prisma bursts with the joy of every hue, a playful dance of crystal beads that catch the light from every angle. It\'s the bag that turns any outing into a celebration of color and sparkle.🎨🌟', stock_quantity: 22 },
+          { id: '5', name: 'Lumière ♥', category: 'Purses', price: 60.00, image_url: '/images/purses/red.jpg', description: 'Lumière ignites every look with fearless glamour. Its crimson crystals catch the light like tiny flames, made for nights when confidence steals the spotlight. 🔥', stock_quantity: 8 },
+          { id: '6', name: 'Pearleva', category: 'Purses', price: 45.00, image_url: '/images/purses/white-snow.jpg', description: 'Pearleva embodies pure sophistication. Layers of luminous pearls reflect quiet luxury, making every occasion feel timeless and effortlessly elegant. 🕊💫', stock_quantity: 16 },
+          { id: '7', name: 'Terra Bundle🌿', category: 'Purses', price: 99.99, image_url: '/images/purses/wood2.jpg', description: 'Terra is crafted from nature\'s essence, where every wooden bead tells a story of earth and warmth. A bag made for free spirits who carry sunshine and simplicity with them. 🌞🌿', stock_quantity: 3 },
+          { id: '8', name: 'RDO Letters Set', category: 'Decorations', price: 25.00, image_url: '/images/decorations/RDO-letters.jpg', description: 'Complete set of R, D, and O letters for custom displays. Perfect for personalizing your space with handmade elegance.', stock_quantity: 12 },
+          { id: '9', name: 'Handmade Beaded Necktie', category: 'Neckties', price: 15.00, image_url: '/images/nektie/necktie.jpg', description: 'Unique beaded necktie that adds elegance to any outfit. Perfect for special occasions and making a sophisticated statement.', stock_quantity: 20 },
+          { id: '10', name: 'Midnight Serenity Beads', category: 'Prayer Beads', price: 8.00, image_url: '/images/prayer/black-prayerBead.jpg', description: 'Immerse in quiet reflection with Midnight Serenity, a hand-crafted black prayer bead strand symbolizing protection and calm energy.', stock_quantity: 35 },
+          { id: '11', name: 'Pearleva Phone Case', category: 'Phone Cases', price: 30.00, image_url: '/images/phone-case/phone-case.jpg', description: 'Pearleva embodies pure sophistication. Layers of luminous pearls reflect quiet luxury, making every occasion feel timeless and effortlessly elegant. 🕊💫', stock_quantity: 15 }
         ]);
         
         setCategories([
           { id: 'all', name: 'All Products' },
-          { id: 'Necklaces', name: 'Necklaces' },
-          { id: 'Bracelets', name: 'Bracelets' },
-          { id: 'Earrings', name: 'Earrings' }
+          { id: 'Purses', name: 'Purses' },
+          { id: 'Decorations', name: 'Letters & Decorations' },
+          { id: 'Neckties', name: 'Neckties' },
+          { id: 'Prayer Beads', name: 'Prayer Beads' },
+          { id: 'Phone Cases', name: 'Phone Cases' }
         ]);
       } finally {
         setLoading(false);

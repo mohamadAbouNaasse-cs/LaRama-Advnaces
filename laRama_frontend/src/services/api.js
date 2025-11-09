@@ -111,6 +111,19 @@ class ApiService {
     return this.get(`/api/products/featured?limit=${limit}`);
   }
 
+  async searchProducts(searchTerm, category = null) {
+    const params = { search: searchTerm };
+    if (category && category !== 'all') {
+      params.category = category;
+    }
+    return this.getProducts(params);
+  }
+
+  async getProductsByCategory(category, page = 1, limit = 10) {
+    const params = { category, page, limit };
+    return this.getProducts(params);
+  }
+
   // Cart methods
   async getCart() {
     return this.get('/api/cart');
