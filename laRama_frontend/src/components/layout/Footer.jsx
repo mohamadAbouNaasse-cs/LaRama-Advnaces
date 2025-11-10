@@ -1,25 +1,46 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { apiService } from "../../services/api";
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     
-    if (!email) return;
+    if (!email.trim()) return;
     
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSubscribed(true);
-      setEmail('');
+    try {
+      const response = await apiService.subscribeNewsletter(email.trim(), 'footer');
       
-      setTimeout(() => setIsSubscribed(false), 3000);
-    }, 1000);
+      if (response.success) {
+        setIsSubscribed(true);
+        setEmail('');
+        
+        // Show success message based on response type
+        if (response.already_subscribed) {
+          console.log('Already subscribed to newsletter');
+        } else if (response.reactivated) {
+          console.log('Newsletter subscription reactivated');
+        } else {
+          console.log('Successfully subscribed to newsletter');
+        }
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => setIsSubscribed(false), 3000);
+      } else {
+        alert(response.message || 'Failed to subscribe to newsletter');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Failed to subscribe to newsletter. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <footer className="bg-[#5C4B3D] text-[#F0E4D3] pt-12 pb-8 px-6 transition-colors duration-700">

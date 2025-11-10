@@ -128,12 +128,43 @@ const Customize = () => {
     }
   }, [activeTab, beadType, color, chainType, purseSize, beadCount, stringMaterial, productType, material]);
 
-  const handleAddToCart = () => {
+  const handleRequestQuote = () => {
     if (isFormComplete) {
       const customProduct = getCurrentProduct;
-      console.log("Adding to cart:", customProduct);
-      // Here you would integrate with your cart context/state management
-      alert("Custom product added to cart!");
+      
+      // Generate order reference number
+      const orderRef = `LRM-CUS-${Date.now()}`;
+      
+      // Create professional WhatsApp message with customization details
+      const message = `Dear LaRama Team,\n\n` +
+        `I would like to request a custom order quote for the following specifications:\n\n` +
+        `*Order Reference:* ${orderRef}\n` +
+        `*Product Category:* ${activeTab === 'purses' ? 'Handcrafted Custom Purse' : activeTab === 'prayer' ? 'Custom Prayer Beads' : 'Custom Handcrafted Product'}\n\n` +
+        `*DETAILED SPECIFICATIONS:*\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `• Bead Type: ${beadType}\n` +
+        `• Color Preference: ${color}\n` +
+        (activeTab === 'purses' ? `• Chain Type: ${chainType}\n• Size Requirements: ${purseSize}\n• Decorative Elements: ${purseDecorations.length > 0 ? purseDecorations.join(', ') : 'Standard'}\n` : '') +
+        (activeTab === 'prayer' ? `• Bead Count: ${beadCount} beads\n• String Material: ${stringMaterial}\n• Decorative Elements: ${prayerDecorations.length > 0 ? prayerDecorations.join(', ') : 'Traditional'}\n` : '') +
+        (activeTab === 'others' ? `• Product Type: ${productType}\n• Material Preference: ${material}\n• Decorative Elements: ${otherDecorations.length > 0 ? otherDecorations.join(', ') : 'Standard'}\n` : '') +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `*Estimated Base Price:* ${customProduct.price}\n\n` +
+        `Could you please provide:\n` +
+        `• Final pricing with customizations\n` +
+        `• Estimated completion timeframe\n` +
+        `• Available delivery options\n\n` +
+        `Thank you for your time and craftsmanship. I look forward to hearing from you.\n\n` +
+        `Best regards`;
+
+      // Encode message for WhatsApp URL
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/96171361960?text=${encodedMessage}`;
+      
+      // Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+      
+      // Show confirmation message
+      alert(`Custom order request sent! Order reference: ${orderRef}\n\nWe'll contact you soon with a quote via WhatsApp.`);
     }
   };
 
@@ -594,7 +625,7 @@ const Customize = () => {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={handleAddToCart}
+                  onClick={handleRequestQuote}
                   disabled={!isFormComplete}
                   className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
                     isFormComplete 
@@ -606,8 +637,13 @@ const Customize = () => {
                     color: 'white'
                   }}
                 >
-                  Add to Cart
+                  📱 Request Custom Quote
                 </button>
+                
+                {/* Information Text */}
+                <p className="text-center text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                  🌟 This will open WhatsApp with your custom order details. We'll provide a personalized quote and delivery timeline.
+                </p>
                 
                 <button
                   onClick={resetForm}

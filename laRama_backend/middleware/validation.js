@@ -84,6 +84,9 @@ const validationRules = {
   ],
   createOrder: [
     { field: 'shipping_address', required: true, type: 'string', minLength: 10, maxLength: 500 }
+  ],
+  newsletter: [
+    { field: 'email', required: true, type: 'string', pattern: patterns.email }
   ]
 };
 

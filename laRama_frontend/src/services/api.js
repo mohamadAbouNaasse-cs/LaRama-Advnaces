@@ -160,6 +160,23 @@ class ApiService {
   async createOrder(orderData) {
     return this.post('/api/orders', orderData);
   }
+
+  // Newsletter methods
+  async subscribeNewsletter(email, source = 'website') {
+    return this.post('/api/newsletter/subscribe', { email, source });
+  }
+
+  async unsubscribeNewsletter(email) {
+    return this.post('/api/newsletter/unsubscribe', { email });
+  }
+
+  async getNewsletterStats() {
+    return this.get('/api/newsletter/stats');
+  }
+
+  async getActiveSubscribers(page = 1, limit = 50) {
+    return this.get(`/api/newsletter/subscribers?page=${page}&limit=${limit}`);
+  }
 }
 
 export const apiService = new ApiService();

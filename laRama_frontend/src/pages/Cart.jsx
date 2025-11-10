@@ -95,8 +95,70 @@ const Cart = () => {
   };
 
   const proceedToCheckout = () => {
-    // Placeholder for checkout functionality
-    alert('Checkout functionality will be implemented in the next phase!');
+    if (!cart || !cart.items || cart.items.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    // Generate order reference number
+    const orderRef = `LRM-ORD-${Date.now()}`;
+    
+    // Create professional order summary
+    let orderSummary = `Dear LaRama Team,\n\n`;
+    orderSummary += `I would like to place an order for the following items:\n\n`;
+    orderSummary += `*ORDER DETAILS*\n`;
+    orderSummary += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    orderSummary += `Order Reference: ${orderRef}\n`;
+    orderSummary += `Customer Name: ${user?.name || 'Not provided'}\n`;
+    orderSummary += `Email Address: ${user?.email || 'Not provided'}\n`;
+    orderSummary += `Order Date: ${new Date().toLocaleDateString()}\n\n`;
+    
+    orderSummary += `*ITEM BREAKDOWN (${cart.total_items} items):*\n`;
+    orderSummary += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    
+    cart.items.forEach((item, index) => {
+      orderSummary += `${index + 1}. ${item.product.name}\n`;
+      orderSummary += `    Quantity: ${item.quantity}\n`;
+      orderSummary += `    Unit Price: ${formatPrice(item.product.price)}\n`;
+      orderSummary += `    Subtotal: ${formatPrice(item.item_total)}\n`;
+      if (index < cart.items.length - 1) orderSummary += `\n`;
+    });
+    
+    orderSummary += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    orderSummary += `*ORDER TOTAL: ${formatPrice(cart.cart_total)}*\n`;
+    orderSummary += `*Shipping: To be calculated based on location*\n\n`;
+    
+    orderSummary += `*NEXT STEPS REQUESTED:*\n`;
+    orderSummary += `• Order confirmation and availability check\n`;
+    orderSummary += `• Shipping cost calculation\n`;
+    orderSummary += `• Payment method and instructions\n`;
+    orderSummary += `• Estimated delivery timeline\n\n`;
+    
+    orderSummary += `Please let me know the total cost including shipping and your preferred payment method.\n\n`;
+    orderSummary += `Thank you for your excellent craftsmanship and service.\n\n`;
+    orderSummary += `Best regards`;
+
+    // Encode message for WhatsApp
+    const encodedMessage = encodeURIComponent(orderSummary);
+    const whatsappUrl = `https://wa.me/96171361960?text=${encodedMessage}`;
+    
+    // Show confirmation dialog
+    const confirmed = confirm(
+      `Order Summary:\n\n` +
+      `Order Reference: ${orderRef}\n` +
+      `Items: ${cart.total_items}\n` +
+      `Total: ${formatPrice(cart.cart_total)}\n\n` +
+      `This will open WhatsApp to send your order details to LaRama.\n\n` +
+      `Click OK to proceed with your order.`
+    );
+    
+    if (confirmed) {
+      // Open WhatsApp in new tab
+      window.open(whatsappUrl, '_blank');
+      
+      // Show success message with order reference
+      alert(`Order submitted successfully!\n\nOrder Reference: ${orderRef}\n\nWe'll contact you via WhatsApp to confirm details and provide payment instructions.`);
+    }
   };
 
   const formatPrice = (price) => {
@@ -242,8 +304,13 @@ const Cart = () => {
                   onClick={proceedToCheckout}
                   className="w-full bg-[#D9A299] hover:bg-[#c18981] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 mb-4"
                 >
-                  Proceed to Checkout
+                  📱 Place Order via WhatsApp
                 </button>
+                
+                {/* Information Text */}
+                <p className="text-center text-xs text-[#8C8A87] mb-4">
+                  🌟 Your order will be sent via WhatsApp for personal service and payment coordination.
+                </p>
                 
                 <Link
                   to="/products"

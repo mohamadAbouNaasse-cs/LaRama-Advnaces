@@ -19,6 +19,8 @@ router.get('/', getCart);
 router.post('/add', validateRequest(validationRules.addToCart), addToCart);
 router.put('/items/:cart_item_id', validateRequest(validationRules.updateCartItem), updateCartItem);
 router.delete('/items/:cart_item_id', removeFromCart);
+// Clear cart endpoints - both /clear and / for backward compatibility
 router.delete('/clear', clearCart);
+router.delete('/', clearCart); // Alternative endpoint for frontend compatibility
 
 module.exports = router;

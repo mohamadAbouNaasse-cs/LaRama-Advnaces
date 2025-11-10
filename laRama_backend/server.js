@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
+const newsletterRoutes = require('./routes/newsletter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,7 +41,8 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       products: '/api/products',
       cart: '/api/cart',
-      orders: '/api/orders'
+      orders: '/api/orders',
+      newsletter: '/api/newsletter'
     }
   });
 });
@@ -50,6 +52,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -100,6 +103,9 @@ const startServer = async () => {
       console.log('   POST /api/orders - Create order');
       console.log('   GET  /api/orders - Get user orders');
       console.log('   GET  /api/orders/:id - Get order details');
+      console.log('   POST /api/newsletter/subscribe - Subscribe to newsletter');
+      console.log('   POST /api/newsletter/unsubscribe - Unsubscribe from newsletter');
+      console.log('   GET  /api/newsletter/stats - Get newsletter statistics');
       console.log('\n✨ Ready to receive requests!');
     });
   } catch (error) {

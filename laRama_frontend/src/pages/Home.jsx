@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Noiré from '../assets/products-images/black-hq.jpg';
 import necktie from '../assets/products-images/necktie.jpg';
 import prayer from '../assets/products-images/prayer.jpg';
+import { apiService } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 
 const Home = () => {
   const featuredProducts = [
@@ -39,6 +41,69 @@ const Home = () => {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [addingToCart, setAddingToCart] = useState({});
+  
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAddToCart = async (product, event) => {
+    // Prevent opening the product detail modal
+    event.stopPropagation();
+    
+    if (!isAuthenticated) {
+      const shouldRedirect = confirm(
+        `Please sign in to add items to your cart.\n\nWould you like to go to the login page now?`
+      );
+      if (shouldRedirect) {
+        navigate('/auth', { 
+          state: { from: { pathname: '/' } }
+        });
+      }
+      return;
+    }
+
+    setAddingToCart(prev => ({ ...prev, [product.id]: true }));
+    
+    try {
+      // For hardcoded products, we need to find matching products in the database
+      // or create a temporary cart item for demonstration
+      const response = await apiService.getProducts();
+      
+      if (response.success && response.data && response.data.products) {
+        // Try to find a matching product by name similarity
+        const products = response.data.products;
+        let matchedProduct = null;
+        
+        // Simple name matching logic
+        if (product.name.includes('Noiré') || product.name.includes('Purse')) {
+          matchedProduct = products.find(p => p.name.toLowerCase().includes('purse') || p.name.toLowerCase().includes('bag'));
+        } else if (product.name.includes('Necktie')) {
+          matchedProduct = products.find(p => p.name.toLowerCase().includes('necktie') || p.name.toLowerCase().includes('tie'));
+        } else if (product.name.includes('Prayer')) {
+          matchedProduct = products.find(p => p.name.toLowerCase().includes('prayer') || p.name.toLowerCase().includes('beads'));
+        }
+        
+        if (matchedProduct) {
+          const addResponse = await apiService.addToCart(matchedProduct.id, 1);
+          if (addResponse.success) {
+            alert(`✅ ${product.name} added to cart successfully!`);
+          } else {
+            alert(addResponse.message || 'Failed to add product to cart');
+          }
+        } else {
+          // If no matching product found, show a message
+          alert(`📝 ${product.name} is currently being added to our inventory. Please contact us directly for this item!`);
+        }
+      } else {
+        alert('Unable to access product catalog. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      alert('Error adding product to cart. Please try again.');
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [product.id]: false }));
+    }
+  };
 
   const openProductDetail = (product) => {
     setSelectedProduct(product);
@@ -48,23 +113,41 @@ const Home = () => {
     setSelectedProduct(null);
   };
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     
-    if (!email) return;
+    if (!email.trim()) return;
     
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSubscribed(true);
-      setEmail('');
+    try {
+      const response = await apiService.subscribeNewsletter(email.trim(), 'home');
       
-      setTimeout(() => setIsSubscribed(false), 3000);
-    }, 1000);
+      if (response.success) {
+        setIsSubscribed(true);
+        setEmail('');
+        
+        // Show success message based on response type
+        if (response.already_subscribed) {
+          console.log('Already subscribed to newsletter');
+        } else if (response.reactivated) {
+          console.log('Newsletter subscription reactivated');
+        } else {
+          console.log('Successfully subscribed to newsletter');
+        }
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => setIsSubscribed(false), 3000);
+      } else {
+        alert(response.message || 'Failed to subscribe to newsletter');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Failed to subscribe to newsletter. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const fallbackSvg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI0YwRTREMyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iMC4zNWVtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzVDNEIzRCI+UHJvZHVjdCBJbWFnZTwvdGV4dD48L3N2Zz4=';
 
   return (
     <div className="min-h-screen">
@@ -112,12 +195,23 @@ const Home = () => {
                 <span className="text-sm text-[#D9A299] font-medium">{product.category}</span>
                 <h3 className="font-serif text-xl text-[#5C4B3D] mb-2 mt-1">{product.name}</h3>
                 <p className="text-[#5C4B3D] font-semibold mb-4">{product.price}</p>
-                <button
-                  onClick={() => openProductDetail(product)}
-                  className="inline-block border border-[#5C4B3D] text-[#5C4B3D] hover:bg-[#5C4B3D] hover:text-[#FAF7F3] py-2 px-6 rounded-full transition-colors duration-300"
-                >
-                  View Details
-                </button>
+                
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={(event) => handleAddToCart(product, event)}
+                    disabled={addingToCart[product.id]}
+                    className="bg-[#D9A299] hover:bg-[#c18981] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-2 px-6 rounded-full transition-colors duration-300"
+                  >
+                    {addingToCart[product.id] ? 'Adding...' : 'Add to Cart'}
+                  </button>
+                  <button
+                    onClick={() => openProductDetail(product)}
+                    className="border border-[#5C4B3D] text-[#5C4B3D] hover:bg-[#5C4B3D] hover:text-[#FAF7F3] py-2 px-6 rounded-full transition-colors duration-300"
+                  >
+                    View Details
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -152,10 +246,6 @@ const Home = () => {
                     src={selectedProduct.image} 
                     alt={selectedProduct.name}
                     className="max-w-full max-h-full object-contain p-4"
-                    onError={(e) => {
-                      e.target.src = fallbackSvg;
-                      e.target.className = "w-full h-full object-cover";
-                    }}
                   />
                 </div>
                 
@@ -170,8 +260,12 @@ const Home = () => {
                   </div>
 
                   <div className="flex space-x-4">
-                    <button className="flex-1 bg-[#D9A299] hover:bg-[#c18981] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
-                      Add to Cart
+                    <button 
+                      onClick={(event) => handleAddToCart(selectedProduct, event)}
+                      disabled={addingToCart[selectedProduct.id]}
+                      className="flex-1 bg-[#D9A299] hover:bg-[#c18981] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300"
+                    >
+                      {addingToCart[selectedProduct.id] ? 'Adding to Cart...' : 'Add to Cart'}
                     </button>
                     <Link 
                       to="/customize" 

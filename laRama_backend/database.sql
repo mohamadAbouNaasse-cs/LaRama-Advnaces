@@ -73,6 +73,16 @@ CREATE TABLE order_items (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Newsletter subscriptions table
+CREATE TABLE newsletter_subscriptions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'unsubscribed')),
+    subscription_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    unsubscribed_date TIMESTAMP NULL,
+    source VARCHAR(50) DEFAULT 'website' -- Track where subscription came from (website, footer, etc.)
+);
+
 -- Indexes for better performance
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_products_category ON products(category);
@@ -82,6 +92,8 @@ CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_newsletter_email ON newsletter_subscriptions(email);
+CREATE INDEX idx_newsletter_status ON newsletter_subscriptions(status);
 
 -- Sample beadwork products data
 INSERT INTO products (name, description, price, image_url, category, stock_quantity) VALUES
