@@ -1,69 +1,123 @@
+/**
+ * Product Customization Page Component - LaRama Frontend
+ * Interactive design tool for custom beadwork product creation
+ * Features three-category system: Purses, Prayer Beads, and Other items
+ * Includes real-time price calculation and WhatsApp order integration
+ */
+
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+
+// Product category images for customization preview
 import purseArt from "../assets/products-images/white-snow.jpg";
 import necktie from "../assets/products-images/necktie.jpg";
 import prayerBeads from "../assets/products-images/prayer.jpg";
 
-// Common options across all categories as specified in your requirements
+/**
+ * Customization Options Configuration
+ * Defines available materials, colors, and specifications for each product category
+ */
+
+// Universal bead types available across all product categories
 const beadTypes = ["Glass", "Seed", "Wooden", "Stone", "Crystal", "Clay", "Metal", "Acrylic"];
+
+// Universal color options for all customizable products
 const colors = ["Red", "Blue", "Green", "Black", "White", "Gold", "Silver", "Pink", "Brown", "Transparent"];
 
-// Category-specific options exactly as requested
+/**
+ * Category-Specific Configuration Objects
+ * Define available options and specifications for each product category
+ * Organized by product type with relevant customization choices
+ */
+
+// Purse and handbag customization options
 const purseOptions = {
-  chainTypes: ["Metal", "Fabric", "None"],
-  decorationTypes: ["Crystals", "Embroidery", "Mixed Materials"],
-  sizes: ["Small", "Medium", "Large"]
+  chainTypes: ["Metal", "Fabric", "None"], // Available chain/strap types
+  decorationTypes: ["Crystals", "Embroidery", "Mixed Materials"], // Decorative enhancement options
+  sizes: ["Small", "Medium", "Large"] // Size categories for purses
 };
 
+// Prayer beads and rosary customization options
 const prayerBeadOptions = {
-  decorationTypes: ["Tassel", "Charm", "Plain"],
-  beadCounts: ["33", "66", "99"],
-  stringMaterials: ["Nylon", "Silk", "Elastic"]
+  decorationTypes: ["Tassel", "Charm", "Plain"], // Finishing decoration options
+  beadCounts: ["33", "66", "99"], // Traditional bead count configurations
+  stringMaterials: ["Nylon", "Silk", "Elastic"] // String material choices for durability and feel
 };
 
+// Other products customization options (neckties, accessories, decorative items)
 const otherOptions = {
-  productTypes: ["Tie", "Bracelet", "Keychain", "Necklace"],
-  decorations: ["Bead Pattern", "Embroidery", "None"],
-  materials: ["Fabric", "Wood", "Mixed"]
+  productTypes: ["Tie", "Bracelet", "Keychain", "Necklace"], // Available product types
+  decorations: ["Bead Pattern", "Embroidery", "None"], // Decorative treatment options
+  materials: ["Fabric", "Wood", "Mixed"] // Base material choices for construction
 };
 
+/**
+ * Customize Component - Main Export Function
+ * Interactive product customization interface with multi-category support
+ * Manages form state, validation, and WhatsApp integration for custom orders
+ * 
+ * @returns {JSX.Element} - Complete customization interface with tabbed navigation
+ */
 const Customize = () => {
+  // Primary navigation state - controls active product category tab
   const [activeTab, setActiveTab] = useState("purses");
   
-  // Common form state
-  const [beadType, setBeadType] = useState("");
-  const [color, setColor] = useState("");
+  /**
+   * Universal Form State - Common Across All Product Categories
+   * These options are available for all product types
+   */
+  const [beadType, setBeadType] = useState(""); // Selected bead material type
+  const [color, setColor] = useState(""); // Selected primary color
   
-  // Purse-specific state
-  const [chainType, setChainType] = useState("");
-  const [purseDecorations, setPurseDecorations] = useState([]);
-  const [purseSize, setPurseSize] = useState("");
+  /**
+   * Purse-Specific State Management
+   * Handles configuration options unique to handbags and purses
+   */
+  const [chainType, setChainType] = useState(""); // Chain/strap material selection
+  const [purseDecorations, setPurseDecorations] = useState([]); // Array of selected decorative options
+  const [purseSize, setPurseSize] = useState(""); // Size category selection
   
-  // Prayer beads-specific state
-  const [prayerDecorations, setPrayerDecorations] = useState([]);
-  const [beadCount, setBeadCount] = useState("");
-  const [stringMaterial, setStringMaterial] = useState("");
+  /**
+   * Prayer Beads-Specific State Management
+   * Manages religious/spiritual beadwork customization options
+   */
+  const [prayerDecorations, setPrayerDecorations] = useState([]); // Array of decorative enhancements
+  const [beadCount, setBeadCount] = useState(""); // Number of beads in sequence
+  const [stringMaterial, setStringMaterial] = useState(""); // String/cord material selection
   
-  // Others-specific state
-  const [productType, setProductType] = useState("");
-  const [otherDecorations, setOtherDecorations] = useState([]);
-  const [material, setMaterial] = useState("");
+  /**
+   * Other Products State Management
+   * Handles miscellaneous items like neckties, keychains, decorative pieces
+   */
+  const [productType, setProductType] = useState(""); // Specific product category
+  const [otherDecorations, setOtherDecorations] = useState([]); // Array of decoration options
+  const [material, setMaterial] = useState(""); // Base material selection
 
-  // Handle checkbox changes for decorations
+  /**
+   * Decoration Selection Handler
+   * Manages multi-selection checkboxes for decorative options across all product categories
+   * Supports toggle functionality - adds/removes decorations from category-specific arrays
+   * 
+   * @param {string} decoration - The decoration option being toggled
+   * @param {string} category - Product category ('purse', 'prayer', 'other')
+   */
   const handleDecorationChange = (decoration, category) => {
     if (category === "purse") {
+      // Toggle decoration in purse decorations array
       setPurseDecorations(prev => 
         prev.includes(decoration) 
-          ? prev.filter(d => d !== decoration)
-          : [...prev, decoration]
+          ? prev.filter(d => d !== decoration) // Remove if already selected
+          : [...prev, decoration] // Add if not selected
       );
     } else if (category === "prayer") {
+      // Toggle decoration in prayer beads decorations array
       setPrayerDecorations(prev => 
         prev.includes(decoration) 
           ? prev.filter(d => d !== decoration)
           : [...prev, decoration]
       );
     } else if (category === "other") {
+      // Toggle decoration in other products decorations array
       setOtherDecorations(prev => 
         prev.includes(decoration) 
           ? prev.filter(d => d !== decoration)
@@ -72,70 +126,99 @@ const Customize = () => {
     }
   };
 
-  // Get current product details for preview
+  /**
+   * Current Product Configuration Generator
+   * Creates a unified product object for preview and order processing
+   * Combines universal options with category-specific selections
+   * Memoized for performance optimization with complex state dependencies
+   * 
+   * @returns {Object} - Complete product configuration object with category-specific properties
+   */
   const getCurrentProduct = useMemo(() => {
+    // Base product properties common to all categories
     const baseProduct = {
-      beadType,
-      color
+      beadType, // Selected bead material
+      color // Selected primary color
     };
 
+    // Generate category-specific product configuration
     switch (activeTab) {
       case "purses":
         return {
           ...baseProduct,
           category: "Custom Purse",
-          chainType,
-          decorations: purseDecorations,
-          size: purseSize,
-          image: purseArt
+          chainType, // Chain/strap material
+          decorations: purseDecorations, // Array of selected decorative options
+          size: purseSize, // Size category
+          image: purseArt // Preview image reference
         };
       case "prayer":
         return {
           ...baseProduct,
           category: "Custom Prayer Beads",
-          decorations: prayerDecorations,
-          beadCount,
-          stringMaterial,
-          image: prayerBeads
+          decorations: prayerDecorations, // Array of decorative enhancements
+          beadCount, // Number of beads in sequence
+          stringMaterial, // String/cord material
+          image: prayerBeads // Preview image reference
         };
       case "others":
         return {
           ...baseProduct,
-          category: `Custom ${productType}`,
-          productType,
-          decorations: otherDecorations,
-          material,
-          image: necktie
+          category: `Custom ${productType}`, // Dynamic category name based on product type
+          productType, // Specific product type (necktie, keychain, etc.)
+          decorations: otherDecorations, // Array of decoration options
+          material, // Base material selection
+          image: necktie // Preview image reference
         };
       default:
-        return baseProduct;
+        return baseProduct; // Fallback to base configuration
     }
   }, [activeTab, beadType, color, chainType, purseDecorations, purseSize, prayerDecorations, beadCount, stringMaterial, productType, otherDecorations, material]);
 
-  // Check if form is complete
+  /**
+   * Form Validation Logic
+   * Determines if the current customization form is complete and ready for submission
+   * Validates both universal requirements and category-specific mandatory fields
+   * Memoized for efficient re-computation when dependencies change
+   * 
+   * @returns {boolean} - True if all required fields are filled, false otherwise
+   */
   const isFormComplete = useMemo(() => {
+    // Universal requirements - must be present for all product types
     const hasCommon = beadType && color;
     
+    // Category-specific validation logic
     switch (activeTab) {
       case "purses":
+        // Purse requires: universal fields + chain type + size selection
         return hasCommon && chainType && purseSize;
       case "prayer":
+        // Prayer beads require: universal fields + bead count + string material
         return hasCommon && beadCount && stringMaterial;
       case "others":
+        // Other products require: universal fields + product type + base material
         return hasCommon && productType && material;
       default:
+        // Invalid or unrecognized category
         return false;
     }
   }, [activeTab, beadType, color, chainType, purseSize, beadCount, stringMaterial, productType, material]);
 
+  /**
+   * WhatsApp Quote Request Handler
+   * Generates professional custom order inquiry and sends via WhatsApp Business
+   * Creates formatted message with complete specifications and unique order reference
+   * Integrates with LaRama's business WhatsApp for direct customer communication
+   */
   const handleRequestQuote = () => {
+    // Only proceed if all required form fields are completed
     if (isFormComplete) {
-      const customProduct = getCurrentProduct;
+      const customProduct = getCurrentProduct; // Get current product configuration
       
-      // Generate order reference number
+      // Generate unique order reference number with timestamp
       const orderRef = `LRM-CUS-${Date.now()}`;
       
-      // Create professional WhatsApp message with customization details
+      // Create professional WhatsApp message with complete customization details
       const message = `Dear LaRama Team,\n\n` +
         `I would like to request a custom order quote for the following specifications:\n\n` +
         `*Order Reference:* ${orderRef}\n` +
@@ -144,6 +227,7 @@ const Customize = () => {
         `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `• Bead Type: ${beadType}\n` +
         `• Color Preference: ${color}\n` +
+        // Add category-specific specifications dynamically
         (activeTab === 'purses' ? `• Chain Type: ${chainType}\n• Size Requirements: ${purseSize}\n• Decorative Elements: ${purseDecorations.length > 0 ? purseDecorations.join(', ') : 'Standard'}\n` : '') +
         (activeTab === 'prayer' ? `• Bead Count: ${beadCount} beads\n• String Material: ${stringMaterial}\n• Decorative Elements: ${prayerDecorations.length > 0 ? prayerDecorations.join(', ') : 'Traditional'}\n` : '') +
         (activeTab === 'others' ? `• Product Type: ${productType}\n• Material Preference: ${material}\n• Decorative Elements: ${otherDecorations.length > 0 ? otherDecorations.join(', ') : 'Standard'}\n` : '') +
@@ -156,36 +240,56 @@ const Customize = () => {
         `Thank you for your time and craftsmanship. I look forward to hearing from you.\n\n` +
         `Best regards`;
 
-      // Encode message for WhatsApp URL
+      // Encode message for URL compatibility and create WhatsApp Business link
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/96171361960?text=${encodedMessage}`;
       
-      // Open WhatsApp in new tab
+      // Open WhatsApp in new browser tab for customer communication
       window.open(whatsappUrl, '_blank');
       
-      // Show confirmation message
+      // Display confirmation message with order reference for customer records
       alert(`Custom order request sent! Order reference: ${orderRef}\n\nWe'll contact you soon with a quote via WhatsApp.`);
     }
   };
 
+  /**
+   * Form Reset Handler
+   * Clears all customization selections and returns form to initial state
+   * Resets both universal fields and all category-specific options
+   * Useful for starting fresh customization or clearing invalid selections
+   */
   const resetForm = () => {
+    // Reset universal form fields
     setBeadType("");
     setColor("");
+    
+    // Reset purse-specific fields
     setChainType("");
     setPurseDecorations([]);
     setPurseSize("");
+    
+    // Reset prayer beads-specific fields
     setPrayerDecorations([]);
     setBeadCount("");
     setStringMaterial("");
+    
+    // Reset other products-specific fields
     setProductType("");
     setOtherDecorations([]);
     setMaterial("");
   };
 
+  /**
+   * Component JSX Return - Main Render Method
+   * Renders complete customization interface with theme support
+   * Includes hero section, tabbed navigation, and dynamic form sections
+   */
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-primary)' }} className="min-h-screen transition-colors duration-700">
-      {/* Hero Section */}
+      
+      {/* Hero Section - Page Header with Background Image */}
       <section className="relative overflow-hidden">
+        {/* Background Image Overlay - Uses purse art with low opacity */}
         <div 
           className="absolute inset-0 opacity-10"
           style={{ 
@@ -194,6 +298,8 @@ const Customize = () => {
             backgroundPosition: 'center'
           }}
         />
+        
+        {/* Hero Content - Main page title and description */}
         <div className="relative max-w-7xl mx-auto px-6 py-24 text-center">
           <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>
             Customize Your Perfect Piece
@@ -204,13 +310,17 @@ const Customize = () => {
         </div>
       </section>
 
+      {/* Main Content Container - Responsive Grid Layout */}
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Main Form Section */}
+          
+          {/* Main Form Section - Takes 2/3 width on large screens */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Tab Navigation - Three main sections as requested */}
+            {/* Tab Navigation Section - Three Main Product Categories */}
             <div className="rounded-3xl shadow-xl p-8 border" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
+              
+              {/* Tab Button Row - Category Selection Interface */}
               <div className="flex flex-wrap gap-4 mb-8">
                 {[
                   { id: "purses", label: "👜 Purses" },
@@ -222,8 +332,8 @@ const Customize = () => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                       activeTab === tab.id 
-                        ? "shadow-lg transform -translate-y-1" 
-                        : "hover:shadow-md"
+                        ? "shadow-lg transform -translate-y-1" // Active tab styling with elevation
+                        : "hover:shadow-md" // Hover effect for inactive tabs
                     }`}
                     style={{
                       backgroundColor: activeTab === tab.id ? 'var(--color-accent)' : 'var(--color-surface)',
@@ -237,13 +347,16 @@ const Customize = () => {
               </div>
             </div>
 
-            {/* Common Options Section - Universal properties as specified */}
+            {/* Universal Options Section - Common Properties for All Product Categories */}
             <div className="rounded-3xl shadow-xl p-8 border" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
               <h2 className="text-2xl font-serif font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>
                 Universal Options
               </h2>
+              
+              {/* Two-Column Grid Layout for Universal Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Bead Type Dropdown */}
+                
+                {/* Bead Type Selection - Material Choice for Beadwork */}
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                     Bead Type *
@@ -265,7 +378,7 @@ const Customize = () => {
                   </select>
                 </div>
 
-                {/* Color Dropdown */}
+                {/* Color Selection - Primary Color Choice for All Products */}
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                     Color *
@@ -289,14 +402,17 @@ const Customize = () => {
               </div>
             </div>
 
-            {/* Purses Section */}
+            {/* Purses Customization Section - Conditional Rendering Based on Active Tab */}
             {activeTab === "purses" && (
               <div className="rounded-3xl shadow-xl p-8 border" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
                 <h2 className="text-2xl font-serif font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>
                   👜 Purse Customization
                 </h2>
+                
+                {/* Purse-Specific Configuration Options */}
                 <div className="space-y-6">
-                  {/* Chain Type Dropdown */}
+                  
+                  {/* Chain Type Selection - Handle/Strap Material Choice */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                       Chain Type *
@@ -318,7 +434,7 @@ const Customize = () => {
                     </select>
                   </div>
 
-                  {/* Decoration Type Checkboxes */}
+                  {/* Decoration Type Selection - Multi-Select Checkboxes for Purse Enhancements */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                       Decoration Type
@@ -338,7 +454,7 @@ const Customize = () => {
                     </div>
                   </div>
 
-                  {/* Size Dropdown */}
+                  {/* Size Selection - Purse Dimension Category */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                       Size *
@@ -363,14 +479,17 @@ const Customize = () => {
               </div>
             )}
 
-            {/* Prayer Beads Section */}
+            {/* Prayer Beads Customization Section - Religious/Spiritual Beadwork Options */}
             {activeTab === "prayer" && (
               <div className="rounded-3xl shadow-xl p-8 border" style={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}>
                 <h2 className="text-2xl font-serif font-bold mb-6" style={{ color: 'var(--color-text-primary)' }}>
                   🕋 Prayer Beads Customization
                 </h2>
+                
+                {/* Prayer Beads-Specific Configuration Options */}
                 <div className="space-y-6">
-                  {/* Decoration Type Checkboxes */}
+                  
+                  {/* Decoration Type Selection - Multi-Select for Spiritual Enhancements */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                       Decoration Type

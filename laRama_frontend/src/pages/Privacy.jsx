@@ -1,15 +1,39 @@
+/**
+ * Privacy Policy Page Component - LaRama Frontend
+ * Legal compliance page detailing data collection, usage, and protection policies
+ * Provides transparent information about customer data handling and privacy rights
+ * Essential for legal compliance and customer trust building
+ */
+
 import { Link } from 'react-router-dom';
 
+/**
+ * Privacy Component - Main Export Function
+ * Static legal document page outlining LaRama's privacy practices and policies
+ * Covers data collection, usage, security measures, and customer rights
+ * 
+ * @returns {JSX.Element} - Complete privacy policy page with structured legal content
+ */
 const Privacy = () => {
+  /**
+   * Component JSX Return - Privacy Policy Interface
+   * Renders structured legal document with navigation and sectioned content
+   * Features responsive design and clear hierarchy for easy policy review
+   */
   return (
     <div className="min-h-screen py-12 px-4 bg-[#FAF7F3]">
       <div className="container mx-auto max-w-4xl">
+        
+        {/* Navigation - Back to Home Link */}
         <Link to="/" className="inline-block mb-8 text-[#5C4B3D] hover:text-[#D9A299] transition-colors">
           &larr; Back to Home
         </Link>
         
+        {/* Privacy Policy Document Container */}
         <div className="bg-white p-8 rounded-lg shadow-md">
           <h1 className="text-3xl font-serif font-bold text-[#5C4B3D] mb-6">Privacy Policy</h1>
+          
+          {/* Last Updated Timestamp - Dynamic Date Display */}
           <p className="text-sm text-[#8C8A87] mb-8">Last updated: {new Date().toLocaleDateString()}</p>
           
           <div className="prose prose-lg text-[#5C4B3D]">

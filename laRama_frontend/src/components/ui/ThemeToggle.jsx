@@ -1,4 +1,26 @@
+/**
+ * Theme Toggle Component - LaRama Frontend
+ * Interactive UI element for switching between light and dark theme modes
+ * Features animated sun/moon icons and visual feedback for theme state
+ * Integrates with global theme management system for consistent user experience
+ */
+
+/**
+ * ThemeToggle Component - Main Export Function
+ * Renders animated toggle button for theme switching functionality
+ * Provides accessible interface with proper ARIA labels and visual indicators
+ * 
+ * @param {Object} props - Component props
+ * @param {boolean} props.isDark - Current dark mode state
+ * @param {Function} props.onToggle - Callback function for theme toggle action
+ * @returns {JSX.Element} - Interactive theme toggle button with animated icons
+ */
 const ThemeToggle = ({ isDark, onToggle = () => {} }) => {
+  /**
+   * Component JSX Return - Theme Toggle Button
+   * Renders interactive button with animated sun/moon icons and decorative stars
+   * Features accessibility support and smooth visual transitions between states
+   */
   return (
     <button
       type="button"
@@ -6,11 +28,14 @@ const ThemeToggle = ({ isDark, onToggle = () => {} }) => {
       onClick={onToggle}
       aria-label={isDark ? "Activate light mode" : "Activate dark mode"}
     >
+      {/* Decorative Stars Animation - Visual Enhancement for Night Mode */}
       <span className="theme-toggle__stars" aria-hidden="true">
         <span className="theme-toggle__star theme-toggle__star--1" />
         <span className="theme-toggle__star theme-toggle__star--2" />
         <span className="theme-toggle__star theme-toggle__star--3" />
       </span>
+      
+      {/* Theme Indicator Container - Houses Sun/Moon Icon Toggle */}
       <span className="theme-toggle__indicator">
         <span className="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

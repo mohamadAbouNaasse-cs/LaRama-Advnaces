@@ -1,10 +1,24 @@
+/**
+ * Authentication Context Provider - LaRama Frontend
+ * Manages global authentication state and user session persistence
+ * Provides authentication methods and user data throughout the application
+ * Handles token verification, storage, and error management
+ */
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./AuthContext.js";
 import apiService from "../services/api.js";
 
+// localStorage key for persisting user authentication data
 const AUTH_STORAGE_KEY = "larama-auth-user";
 
+/**
+ * Utility function to safely read stored user data from localStorage
+ * Handles SSR compatibility and JSON parsing errors
+ * @returns {object|null} Parsed user object or null if not found/invalid
+ */
 const readStoredUser = () => {
+  // Server-side rendering safety check
   if (typeof window === "undefined") {
     return null;
   }
@@ -13,6 +27,7 @@ const readStoredUser = () => {
     const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.warn("Failed to read stored auth user", error);
     return null;
   }

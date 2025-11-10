@@ -1,16 +1,39 @@
+/**
+ * Returns & Refunds Page Component - LaRama Frontend
+ * Customer service page detailing return policies, procedures, and exchange options
+ * Features tabbed navigation for organized policy information presentation
+ * Provides comprehensive guidance for return process and customer rights
+ */
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * Returns Component - Main Export Function
+ * Interactive policy page with tabbed interface for returns, process, and exchanges
+ * Manages tab state for organized information display and enhanced user navigation
+ * 
+ * @returns {JSX.Element} - Complete returns policy page with tabbed content sections
+ */
 const Returns = () => {
+  // Tab navigation state - controls active policy section display
   const [activeTab, setActiveTab] = useState('returns');
 
+  /**
+   * Component JSX Return - Returns Policy Interface
+   * Renders tabbed policy page with navigation, hero section, and content sections
+   * Features interactive tab system for organized policy information access
+   */
   return (
     <div className="min-h-screen py-12 px-4 bg-[#FAF7F3]">
       <div className="container mx-auto max-w-4xl">
+        
+        {/* Navigation - Back to Home Link */}
         <Link to="/" className="inline-block mb-8 text-[#5C4B3D] hover:text-[#D9A299] transition-colors">
           &larr; Back to Home
         </Link>
         
+        {/* Page Hero Section - Returns Policy Introduction */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-serif font-bold text-[#5C4B3D] mb-4">Returns & Refunds</h1>
           <p className="text-lg text-[#8C8A87] max-w-2xl mx-auto">
@@ -18,6 +41,7 @@ const Returns = () => {
           </p>
         </div>
 
+        {/* Tab Navigation - Policy Section Selection */}
         <div className="flex border-b border-[#DCC5B2] mb-8">
           <button
             onClick={() => setActiveTab('returns')}

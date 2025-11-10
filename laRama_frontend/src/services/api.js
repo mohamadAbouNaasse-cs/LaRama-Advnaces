@@ -1,13 +1,35 @@
+/**
+ * API Service Layer - LaRama Frontend
+ * Centralized service for all backend API communications
+ * Handles authentication, error management, and request/response formatting
+ * Provides methods for user auth, products, cart, orders, and newsletter operations
+ */
+
+// Environment-based API base URL configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+/**
+ * ApiService Class
+ * Singleton service class managing all HTTP requests to the backend
+ * Implements JWT token management and standardized error handling
+ */
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
   }
 
-  // Generic request method
+  /**
+   * Generic HTTP Request Method
+   * Handles authentication headers, error responses, and JSON parsing
+   * @param {string} endpoint - API endpoint path
+   * @param {object} options - Fetch options (method, headers, body)
+   * @returns {Promise<object>} - Parsed JSON response
+   */
   async request(endpoint, options = {}) {
+    // Construct full URL from base URL and endpoint
     const url = `${this.baseURL}${endpoint}`;
+    
+    // Default request configuration with JSON content type
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -16,33 +38,44 @@ class ApiService {
       ...options,
     };
 
-    // Add auth token if available
+    // Attach JWT authentication token if available in localStorage
     const token = localStorage.getItem('larama-auth-token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
     try {
+      // Execute HTTP request and parse JSON response
       const response = await fetch(url, config);
       const data = await response.json();
 
+      // Handle HTTP error status codes
       if (!response.ok) {
         throw new Error(data.message || `HTTP error! status: ${response.status}`);
       }
 
       return data;
     } catch (error) {
-      console.error('API Request Error:', error);
+      // Log error for debugging in development mode
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.error('API Request Error:', error);
+      }
       throw error;
     }
   }
 
-  // GET request
+  /**
+   * HTTP Method Wrappers
+   * Simplified methods for common HTTP operations
+   */
+
+  // GET request for data retrieval
   async get(endpoint) {
     return this.request(endpoint, { method: 'GET' });
   }
 
-  // POST request
+  // POST request for data creation
   async post(endpoint, data) {
     return this.request(endpoint, {
       method: 'POST',
@@ -50,7 +83,7 @@ class ApiService {
     });
   }
 
-  // PUT request
+  // PUT request for data updates
   async put(endpoint, data) {
     return this.request(endpoint, {
       method: 'PUT',
@@ -58,12 +91,18 @@ class ApiService {
     });
   }
 
-  // DELETE request
+  // DELETE request for data removal
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
   }
 
-  // Auth methods
+  /**
+   * Authentication Methods
+   * Handle user registration, login, logout, and profile management
+   * Manage JWT token storage and validation
+   */
+
+  // Register new user account and store authentication token
   async register(userData) {
     const response = await this.post('/api/auth/register', userData);
     if (response.success && response.data.token) {
@@ -72,6 +111,7 @@ class ApiService {
     return response;
   }
 
+  // Authenticate user login and store authentication token
   async login(credentials) {
     const response = await this.post('/api/auth/login', credentials);
     if (response.success && response.data.token) {
@@ -80,15 +120,18 @@ class ApiService {
     return response;
   }
 
+  // Clear authentication data from local storage
   async logout() {
     localStorage.removeItem('larama-auth-token');
     localStorage.removeItem('larama-auth-user');
   }
 
+  // Retrieve current authenticated user profile information
   async getProfile() {
     return this.get('/api/auth/profile');
   }
 
+  // Verify JWT token validity with backend
   async verifyToken() {
     return this.get('/api/auth/verify');
   }

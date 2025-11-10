@@ -1,10 +1,25 @@
+/**
+ * Header Layout Component - LaRama Frontend
+ * Global navigation header with brand logo, menu links, and user authentication
+ * Manages active page highlighting, theme toggling, and responsive design
+ * Provides consistent navigation experience across all pages
+ */
+
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "../ui/ThemeToggle";
 import { useAuth } from "../../hooks/useAuth";
 
+/**
+ * Header Component
+ * Renders main navigation header with logo, menu, and user controls
+ * @param {function} onToggleTheme - Callback for theme toggle functionality
+ * @param {boolean} isDark - Current theme state (dark/light)
+ */
 const Header = ({ onToggleTheme = () => {}, isDark = false }) => {
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+  
+  // Generate user initials for avatar display
   const initials = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase();
 
   const isActivePage = (path) => {
@@ -26,7 +41,6 @@ const Header = ({ onToggleTheme = () => {}, isDark = false }) => {
   return (
     <header className="bg-[#DCC5B2] py-4 px-6 shadow-md transition-colors duration-700">
       <div className="container mx-auto flex justify-between items-center">
-        {/* here i added the logo and brand name */}
         <Link
           to="/"
           className="flex items-center space-x-3 hover:drop-shadow-[0_0_6px_rgba(245,158,11,0.6)] transition-all duration-300"

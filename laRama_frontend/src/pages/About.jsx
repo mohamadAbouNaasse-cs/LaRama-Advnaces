@@ -1,13 +1,35 @@
+/**
+ * About Page Component - LaRama Frontend
+ * Brand story and company information page showcasing LaRama's journey and values
+ * Features founder story, company mission, and craftsmanship philosophy
+ * Presents authentic narrative from university startup to handmade business
+ */
+
 import { Link } from 'react-router-dom';
 
+/**
+ * About Component - Main Export Function
+ * Static content page detailing LaRama's history, mission, and creative philosophy
+ * Showcases brand authenticity through founder's journey and craftsmanship values
+ * 
+ * @returns {JSX.Element} - Complete about page with brand story and company information
+ */
 const About = () => {
+  /**
+   * Component JSX Return - About Page Content
+   * Renders complete brand story with navigation, hero section, and detailed company information
+   * Uses LaRama brand colors and responsive layout for optimal storytelling presentation
+   */
   return (
     <div className="min-h-screen py-12 px-4 bg-[#FAF7F3]">
       <div className="container mx-auto max-w-4xl">
+        
+        {/* Navigation - Back to Home Link */}
         <Link to="/" className="inline-block mb-8 text-[#5C4B3D] hover:text-[#D9A299] transition-colors">
           &larr; Back to Home
         </Link>
         
+        {/* Page Hero Section - Introduction and Brand Promise */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-serif font-bold text-[#5C4B3D] mb-4">Our Story</h1>
           <p className="text-lg text-[#8C8A87] max-w-2xl mx-auto">
@@ -15,8 +37,11 @@ const About = () => {
           </p>
         </div>
 
+        {/* Brand Story Section - LaRama's Origin and Mission */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden mb-12">
           <div className="p-8 md:p-12">
+            
+            {/* Brand Identity Header */}
             <div className="text-center mb-8">
               <h2 className="text-3xl font-serif font-bold text-[#5C4B3D] mb-4">LaRama Handcrafted</h2>
               <p className="text-xl text-[#8C8A87]">
@@ -24,7 +49,10 @@ const About = () => {
               </p>
             </div>
             
+            {/* Two-Column Layout - Story Content and Quote */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              
+              {/* Founder Story - Origin and Journey */}
               <div>
                 <p className="text-[#5C4B3D] mb-4">
                   LaRama began as a spark of creativity in the busy life of a computer science student 
@@ -38,6 +66,8 @@ const About = () => {
                   between academic rigor and creative freedom.
                 </p>
               </div>
+              
+              {/* Philosophy Quote - Brand Values Highlight */}
               <div className="bg-[#F0E4D3] p-6 rounded-lg text-center">
                 <div className="text-5xl text-[#D9A299] mb-4">"</div>
                 <p className="text-[#5C4B3D] italic">

@@ -1,16 +1,31 @@
+/**
+ * Products Page Component - LaRama Frontend
+ * Product catalog with category filtering, search functionality, and cart integration
+ * Displays products in grid layout with detailed modal views
+ * Handles product loading, categorization, and cart interactions
+ */
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { apiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 
+/**
+ * Products Component
+ * Main product catalog page with filtering and cart functionality
+ * Manages product data fetching, category filtering, and user interactions
+ */
 const Products = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [addingToCart, setAddingToCart] = useState({});
+  // State management for product catalog functionality
+  const [activeCategory, setActiveCategory] = useState('all'); // Currently selected category filter
+  const [selectedProduct, setSelectedProduct] = useState(null); // Product modal display state
+  const [products, setProducts] = useState([]); // Product catalog data
+  const [categories, setCategories] = useState([]); // Available product categories
+  const [loading, setLoading] = useState(true); // Data loading state
+  const [error, setError] = useState(''); // Error message display
+  const [addingToCart, setAddingToCart] = useState({}); // Cart addition loading states
+  
+  // Authentication context for cart functionality
   const { isAuthenticated } = useAuth();
 
   // Fetch products and categories on component mount

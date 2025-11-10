@@ -1,20 +1,43 @@
+/**
+ * Shipping Information Page Component - LaRama Frontend
+ * Comprehensive shipping details with order tracking and regional information
+ * Features tabbed navigation for local/international shipping and order status lookup
+ * Provides real-time order tracking and shipping policy information
+ */
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * Shipping Component - Main Export Function
+ * Interactive shipping page with regional tabs and order tracking functionality
+ * Manages shipping information display and order status checking system
+ * 
+ * @returns {JSX.Element} - Complete shipping page with tracking and policy information
+ */
 const Shipping = () => {
+  // Tab navigation state - controls regional shipping information display
   const [activeTab, setActiveTab] = useState('lebanon');
-  const [orderId, setOrderId] = useState('');
-  const [orderStatus, setOrderStatus] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  
+  // Order tracking state management
+  const [orderId, setOrderId] = useState(''); // User input for order ID lookup
+  const [orderStatus, setOrderStatus] = useState(null); // Retrieved order status information
+  const [isLoading, setIsLoading] = useState(false); // Loading state for status checking
 
- 
+  /**
+   * Order Status Lookup Handler
+   * Simulates order tracking system with mock data for demonstration
+   * Validates input and provides realistic order status responses
+   * 
+   * @param {Event} e - Form submission event to prevent default behavior
+   */
   const checkOrderStatus = async (e) => {
     e.preventDefault();
-    if (!orderId.trim()) return;
+    if (!orderId.trim()) return; // Validate order ID input
     
     setIsLoading(true);
-     
-    //just for trial
+    
+    // Mock order status simulation for demonstration purposes
     setTimeout(() => {
       const mockStatuses = [
         { id: 'LR1001', status: 'Under Creation', description: 'Your handmade item is being crafted with care.' },

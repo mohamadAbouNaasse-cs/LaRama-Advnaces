@@ -1,13 +1,28 @@
+/**
+ * Shopping Cart Page Component - LaRama Frontend
+ * Manages user's shopping cart with item modification and WhatsApp checkout
+ * Handles cart data fetching, quantity updates, item removal, and order processing
+ * Integrates WhatsApp for professional order communication workflow
+ */
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 
+/**
+ * Cart Component
+ * Shopping cart management with WhatsApp-based checkout integration
+ * Protected route requiring user authentication for cart access
+ */
 const Cart = () => {
-  const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [updating, setUpdating] = useState({});
+  // Cart state management
+  const [cart, setCart] = useState(null); // Cart data from backend
+  const [loading, setLoading] = useState(true); // Cart loading state
+  const [error, setError] = useState(''); // Error message display
+  const [updating, setUpdating] = useState({}); // Item update loading states
+  
+  // Authentication and navigation context
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 

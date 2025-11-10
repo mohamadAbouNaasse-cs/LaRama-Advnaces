@@ -1,12 +1,33 @@
+/**
+ * Home Page Component - LaRama Frontend
+ * Landing page showcasing featured products, brand story, and key functionality
+ * Includes hero section, product showcase, customization preview, and newsletter signup
+ * Integrates cart functionality with authentication-aware product interactions
+ */
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
+// Featured product images for home page display
 import Noiré from '../assets/products-images/black-hq.jpg';
 import necktie from '../assets/products-images/necktie.jpg';
 import prayer from '../assets/products-images/prayer.jpg';
+
+// Core services and hooks
 import { apiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 
+/**
+ * Home Component
+ * Main landing page with featured products and brand presentation
+ * Handles product interactions, newsletter signup, and navigation
+ */
 const Home = () => {
+  /**
+   * Featured Products Data
+   * Curated product showcase for home page display
+   * Includes product details, pricing, and images for key LaRama items
+   */
   const featuredProducts = [
     {
       id: 1,

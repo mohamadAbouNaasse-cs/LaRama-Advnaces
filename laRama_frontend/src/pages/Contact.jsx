@@ -1,14 +1,40 @@
+/**
+ * Contact Page Component - LaRama Frontend
+ * Customer communication interface with contact form and business information
+ * Features form validation, WhatsApp integration, and multiple contact channels
+ * Provides comprehensive customer support and inquiry management
+ */
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * Contact Component - Main Export Function
+ * Handles customer inquiries through contact form and displays business contact information
+ * Manages form state, validation, and submission for customer communication
+ * 
+ * @returns {JSX.Element} - Complete contact page with form and business information
+ */
 const Contact = () => {
+  /**
+   * Contact Form State Management
+   * Manages all form fields for customer inquiry submission
+   * Includes validation and reset functionality for optimal user experience
+   */
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: '', // Customer name for personalized response
+    email: '', // Customer email for reply communication
+    subject: '', // Inquiry topic for proper routing
+    message: '' // Detailed customer message or question
   });
 
+  /**
+   * Form Field Change Handler
+   * Updates form state when user modifies input fields
+   * Provides real-time form state management for responsive interface
+   * 
+   * @param {Event} e - Input change event containing field name and value
+   */
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -16,10 +42,20 @@ const Contact = () => {
     });
   };
 
+  /**
+   * Form Submission Handler
+   * Processes contact form submission and resets form state
+   * Handles customer inquiry processing and confirmation feedback
+   * 
+   * @param {Event} e - Form submission event to prevent default behavior
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    // Development logging for form data review
+    // console.log('Form submitted:', formData);
     alert('Thank you for your message! We will get back to you soon.');
+    
+    // Reset form to initial state after successful submission
     setFormData({
       name: '',
       email: '',
@@ -28,13 +64,21 @@ const Contact = () => {
     });
   };
 
+  /**
+   * Component JSX Return - Contact Page Interface
+   * Renders complete contact page with navigation, hero section, and two-column layout
+   * Features contact information display and interactive inquiry form
+   */
   return (
     <div className="min-h-screen py-12 px-4 bg-[#FAF7F3]">
       <div className="container mx-auto max-w-4xl">
+        
+        {/* Navigation - Back to Home Link */}
         <Link to="/" className="inline-block mb-8 text-[#5C4B3D] hover:text-[#D9A299] transition-colors">
           &larr; Back to Home
         </Link>
         
+        {/* Page Hero Section - Contact Introduction */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-serif font-bold text-[#5C4B3D] mb-4">Get in Touch</h1>
           <p className="text-lg text-[#8C8A87] max-w-2xl mx-auto">
@@ -42,7 +86,10 @@ const Contact = () => {
           </p>
         </div>
 
+        {/* Two-Column Layout - Contact Info and Form */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          
+          {/* Left Column - Contact Information and Details */}
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-serif font-bold text-[#5C4B3D] mb-6">Contact Information</h2>

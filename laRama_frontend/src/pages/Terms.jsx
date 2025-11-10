@@ -1,15 +1,39 @@
+/**
+ * Terms of Service Page Component - LaRama Frontend
+ * Legal compliance page outlining service terms, conditions, and user agreements
+ * Provides structured legal framework for customer interactions and business operations
+ * Essential for legal protection and transparent business relationship establishment
+ */
+
 import { Link } from 'react-router-dom';
 
+/**
+ * Terms Component - Main Export Function
+ * Static legal document page detailing LaRama's terms of service and user agreements
+ * Covers product policies, custom orders, shipping, returns, and intellectual property
+ * 
+ * @returns {JSX.Element} - Complete terms of service page with structured legal content
+ */
 const Terms = () => {
+  /**
+   * Component JSX Return - Terms of Service Interface
+   * Renders structured legal document with navigation and sectioned legal content
+   * Features responsive design and clear hierarchy for legal document review
+   */
   return (
     <div className="min-h-screen py-12 px-4 bg-[#FAF7F3]">
       <div className="container mx-auto max-w-4xl">
+        
+        {/* Navigation - Back to Home Link */}
         <Link to="/" className="inline-block mb-8 text-[#5C4B3D] hover:text-[#D9A299] transition-colors">
           &larr; Back to Home
         </Link>
         
+        {/* Terms of Service Document Container */}
         <div className="bg-white p-8 rounded-lg shadow-md">
           <h1 className="text-3xl font-serif font-bold text-[#5C4B3D] mb-6">Terms of Service</h1>
+          
+          {/* Last Updated Timestamp - Dynamic Date Display */}
           <p className="text-sm text-[#8C8A87] mb-8">Last updated: {new Date().toLocaleDateString()}</p>
           
           <div className="prose prose-lg text-[#5C4B3D]">

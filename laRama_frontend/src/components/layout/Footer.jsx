@@ -1,52 +1,85 @@
+/**
+ * Footer Component - LaRama Frontend
+ * Site-wide footer with navigation links, newsletter signup, and business information
+ * Features newsletter integration, social media links, and comprehensive site navigation
+ * Provides consistent brand presence and customer engagement opportunities
+ */
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { apiService } from "../../services/api";
 
+/**
+ * Footer Component - Main Export Function
+ * Comprehensive site footer with multi-column layout and interactive features
+ * Manages newsletter subscription, navigation links, and business contact information
+ * 
+ * @returns {JSX.Element} - Complete footer with branding, navigation, and newsletter signup
+ */
 const Footer = () => {
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // Newsletter subscription state management
+  const [email, setEmail] = useState(''); // User email input for newsletter
+  const [isSubscribed, setIsSubscribed] = useState(false); // Success state indicator
+  const [isLoading, setIsLoading] = useState(false); // Loading state for API calls
 
+  /**
+   * Newsletter Subscription Handler
+   * Processes newsletter signup through API integration with validation and feedback
+   * Handles various subscription states: new, existing, and reactivation scenarios
+   * 
+   * @param {Event} e - Form submission event to prevent default behavior
+   */
   const handleSubscribe = async (e) => {
     e.preventDefault();
     
+    // Validate email input before API call
     if (!email.trim()) return;
     
     setIsLoading(true);
     
     try {
+      // Call newsletter subscription API with user email and source tracking
       const response = await apiService.subscribeNewsletter(email.trim(), 'footer');
       
       if (response.success) {
         setIsSubscribed(true);
-        setEmail('');
+        setEmail(''); // Clear form after successful subscription
         
-        // Show success message based on response type
+        // Log subscription status for development debugging
         if (response.already_subscribed) {
-          console.log('Already subscribed to newsletter');
+          // Development logging for already subscribed users
         } else if (response.reactivated) {
-          console.log('Newsletter subscription reactivated');
+          // Development logging for reactivated subscriptions
         } else {
-          console.log('Successfully subscribed to newsletter');
+          // Development logging for new subscriptions
         }
         
-        // Hide success message after 3 seconds
+        // Auto-hide success message after 3 seconds for clean UX
         setTimeout(() => setIsSubscribed(false), 3000);
       } else {
+        // Display error message for failed subscription attempts
         alert(response.message || 'Failed to subscribe to newsletter');
       }
-    } catch (error) {
-      console.error('Newsletter subscription error:', error);
+    } catch {
+      // Handle network or API errors gracefully
       alert('Failed to subscribe to newsletter. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+  /**
+   * Component JSX Return - Footer Interface
+   * Renders comprehensive site footer with four-column responsive grid layout
+   * Features brand information, navigation links, newsletter signup, and social media
+   */
   return (
     <footer className="bg-[#5C4B3D] text-[#F0E4D3] pt-12 pb-8 px-6 transition-colors duration-700">
       <div className="container mx-auto">
         
+        {/* Main Footer Content Grid - Four Column Responsive Layout */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          
+          {/* Brand Column - Logo and Company Information */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center space-x-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-[#F0E4D3] to-[#DCC5B2] rounded-full flex items-center justify-center shadow-lg border-2 border-[#F0E4D3] overflow-hidden">

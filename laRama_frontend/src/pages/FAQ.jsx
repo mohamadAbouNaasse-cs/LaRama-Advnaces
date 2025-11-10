@@ -1,13 +1,40 @@
+/**
+ * FAQ Page Component - LaRama Frontend
+ * Frequently Asked Questions interface with collapsible accordion functionality
+ * Provides comprehensive customer support information and common inquiry answers
+ * Features interactive UI for easy information access and navigation
+ */
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * FAQ Component - Main Export Function
+ * Interactive FAQ page with expandable question-answer pairs
+ * Manages accordion state for enhanced user experience and information accessibility
+ * 
+ * @returns {JSX.Element} - Complete FAQ page with collapsible question sections
+ */
 const FAQ = () => {
+  // Accordion state - tracks which FAQ item is currently expanded
   const [openIndex, setOpenIndex] = useState(null);
 
+  /**
+   * FAQ Accordion Toggle Handler
+   * Controls expansion and collapse of individual FAQ items
+   * Ensures only one item is open at a time for clean interface
+   * 
+   * @param {number} index - Index of the FAQ item to toggle
+   */
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  /**
+   * FAQ Content Configuration
+   * Array of question-answer pairs covering common customer inquiries
+   * Organized by topic: shipping, returns, care, customization, payment, tracking, wholesale
+   */
   const faqItems = [
     {
       question: "How long does it take to receive my order?",
@@ -43,9 +70,16 @@ const FAQ = () => {
     }
   ];
 
+  /**
+   * Component JSX Return - FAQ Page Interface
+   * Renders interactive FAQ page with accordion-style question navigation
+   * Features responsive design and smooth expand/collapse animations
+   */
   return (
     <div className="min-h-screen py-12 px-4 bg-[#FAF7F3]">
       <div className="container mx-auto max-w-4xl">
+        
+        {/* Navigation - Back to Home Link */}
         <Link to="/" className="inline-block mb-8 text-[#5C4B3D] hover:text-[#D9A299] transition-colors">
           &larr; Back to Home
         </Link>

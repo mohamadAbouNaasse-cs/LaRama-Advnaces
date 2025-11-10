@@ -1,43 +1,86 @@
+/**
+ * Authentication Page Component - LaRama Frontend
+ * Dual-mode authentication interface supporting both login and registration
+ * Features form validation, error handling, and secure navigation redirection
+ * Integrates with AuthContext for centralized user management
+ */
+
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
+/**
+ * Auth Component - Main Export Function
+ * Handles user authentication (login/signup) with tabbed interface
+ * Manages form state, validation, and API integration for secure access
+ * 
+ * @returns {JSX.Element} - Complete authentication interface with login and registration forms
+ */
 const Auth = () => {
+  // Tab navigation state - controls active authentication mode
   const [activeTab, setActiveTab] = useState("login");
+  
+  // Navigation hooks for routing and redirect handling
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Authentication context access for login/registration operations
   const { loginUser, register, loading } = useAuth();
 
-  // Separate state for login form
+  /**
+   * Login Form State Management
+   * Isolated state for login form to prevent cross-contamination with signup
+   * Includes validation, error handling, and submission status tracking
+   */
   const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
-    error: "",
-    isSubmitting: false
+    email: "", // User email for authentication
+    password: "", // User password for authentication
+    error: "", // Form-specific error messages
+    isSubmitting: false // Prevents double-submission during API calls
   });
 
-  // Separate state for signup form
+  /**
+   * Signup Form State Management
+   * Separate state management for registration form with additional fields
+   * Maintains form isolation and independent validation logic
+   */
   const [signupData, setSignupData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    error: "",
-    isSubmitting: false
+    name: "", // User's full name for account creation
+    email: "", // Email address for new account
+    password: "", // Password for new account creation
+    error: "", // Registration-specific error messages
+    isSubmitting: false // Submission state to prevent duplicate requests
   });
 
+  // Redirect target - returns user to intended page after successful authentication
   const redirectTo = location.state?.from?.pathname || "/dashboard";
 
-  // Login form handlers
+  /**
+   * Login Form Change Handler
+   * Updates login form fields and clears previous errors when user types
+   * Provides real-time form state management with error reset functionality
+   * 
+   * @param {string} field - The form field name being updated
+   * @param {string} value - The new value for the specified field
+   */
   const handleLoginChange = (field, value) => {
     setLoginData(prev => ({ ...prev, [field]: value, error: "" }));
   };
 
+  /**
+   * Login Form Submission Handler
+   * Validates form data, attempts authentication via API, and handles navigation
+   * Includes comprehensive validation, error handling, and success redirection
+   * 
+   * @param {Event} event - Form submission event to prevent default behavior
+   */
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     setLoginData(prev => ({ ...prev, isSubmitting: true, error: "" }));
 
     const { email, password } = loginData;
 
+    // Client-side validation - check for empty fields
     if (!email.trim() || !password.trim()) {
       setLoginData(prev => ({ 
         ...prev, 
@@ -47,6 +90,7 @@ const Auth = () => {
       return;
     }
 
+    // Basic email format validation
     if (!email.includes('@')) {
       setLoginData(prev => ({ 
         ...prev, 
@@ -57,20 +101,24 @@ const Auth = () => {
     }
 
     try {
+      // Attempt authentication via AuthContext
       const result = await loginUser({ email: email.trim(), password: password.trim() });
       
       if (result.success) {
+        // Successful login - clear form and redirect to intended destination
         setLoginData({ email: "", password: "", error: "", isSubmitting: false });
         navigate(redirectTo, { replace: true });
       } else {
+        // Authentication failed - display error message from server
         setLoginData(prev => ({ 
           ...prev, 
           error: result.message || "Login failed. Please check your credentials.", 
           isSubmitting: false 
         }));
       }
-    } catch (err) {
-      console.error("Login error:", err);
+    } catch {
+      // Network or server error handling
+      // Error logging for development debugging
       setLoginData(prev => ({ 
         ...prev, 
         error: "Unable to connect to server. Please try again.", 
@@ -79,17 +127,32 @@ const Auth = () => {
     }
   };
 
-  // Signup form handlers
+  /**
+   * Signup Form Change Handler
+   * Updates registration form fields and clears validation errors on user input
+   * Provides responsive form management for improved user experience
+   * 
+   * @param {string} field - The form field name being updated (name, email, password)
+   * @param {string} value - The new value for the specified field
+   */
   const handleSignupChange = (field, value) => {
     setSignupData(prev => ({ ...prev, [field]: value, error: "" }));
   };
 
+  /**
+   * Signup Form Submission Handler
+   * Validates registration data, creates new user account, and handles authentication
+   * Implements comprehensive validation including name, email, and password requirements
+   * 
+   * @param {Event} event - Form submission event to prevent default behavior
+   */
   const handleSignupSubmit = async (event) => {
     event.preventDefault();
     setSignupData(prev => ({ ...prev, isSubmitting: true, error: "" }));
 
     const { name, email, password } = signupData;
 
+    // Client-side validation - ensure all required fields are filled
     if (!name.trim() || !email.trim() || !password.trim()) {
       setSignupData(prev => ({ 
         ...prev, 
@@ -99,6 +162,7 @@ const Auth = () => {
       return;
     }
 
+    // Email format validation
     if (!email.includes('@')) {
       setSignupData(prev => ({ 
         ...prev, 
@@ -108,6 +172,7 @@ const Auth = () => {
       return;
     }
 
+    // Password strength validation - minimum 6 characters
     if (password.length < 6) {
       setSignupData(prev => ({ 
         ...prev, 
@@ -118,6 +183,7 @@ const Auth = () => {
     }
 
     try {
+      // Attempt user registration via AuthContext
       const result = await register({ 
         name: name.trim(), 
         email: email.trim(), 
@@ -125,17 +191,19 @@ const Auth = () => {
       });
       
       if (result.success) {
+        // Successful registration - clear form and redirect
         setSignupData({ name: "", email: "", password: "", error: "", isSubmitting: false });
         navigate(redirectTo, { replace: true });
       } else {
+        // Registration failed - display server error message
         setSignupData(prev => ({ 
           ...prev, 
           error: result.message || "Registration failed. Please try again.", 
           isSubmitting: false 
         }));
       }
-    } catch (err) {
-      console.error("Registration error:", err);
+    } catch {
+      // Network or server error handling
       setSignupData(prev => ({ 
         ...prev, 
         error: "Unable to connect to server. Please try again.", 
