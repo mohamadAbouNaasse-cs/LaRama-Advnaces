@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { join } from 'path';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: true,
     }),
+    ProductsModule,
   ],
 })
 export class AppModule {}
