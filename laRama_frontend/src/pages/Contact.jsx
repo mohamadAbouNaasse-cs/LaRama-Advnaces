@@ -6,7 +6,8 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 /**
  * Contact Component - Main Export Function
@@ -21,6 +22,9 @@ const Contact = () => {
    * Manages all form fields for customer inquiry submission
    * Includes validation and reset functionality for optimal user experience
    */
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   const [formData, setFormData] = useState({
     name: '', // Customer name for personalized response
     email: '', // Customer email for reply communication
@@ -64,6 +68,17 @@ const Contact = () => {
     });
   };
 
+  const handleLiveSupport = () => {
+    const liveRoomId = encodeURIComponent('support-session');
+
+    if (!isAuthenticated) {
+      navigate('/auth', { state: { from: { pathname: `/live/${liveRoomId}` } } });
+      return;
+    }
+
+    navigate(`/live/${liveRoomId}`);
+  };
+
   /**
    * Component JSX Return - Contact Page Interface
    * Renders complete contact page with navigation, hero section, and two-column layout
@@ -79,11 +94,18 @@ const Contact = () => {
         </Link>
         
         {/* Page Hero Section - Contact Introduction */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 space-y-6">
           <h1 className="text-4xl font-serif font-bold text-[#5C4B3D] mb-4">Get in Touch</h1>
           <p className="text-lg text-[#8C8A87] max-w-2xl mx-auto">
             Have questions about our handmade products or custom orders? We'd love to hear from you!
           </p>
+          <button
+            type="button"
+            onClick={handleLiveSupport}
+            className="inline-flex items-center justify-center rounded-full bg-[#5C4B3D] px-6 py-3 text-sm font-semibold text-[#F0E4D3] transition-all duration-300 hover:bg-[#3F3329]"
+          >
+            Start a live studio call
+          </button>
         </div>
 
         {/* Two-Column Layout - Contact Info and Form */}

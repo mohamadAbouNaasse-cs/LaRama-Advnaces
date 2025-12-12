@@ -84,6 +84,25 @@ const Dashboard = () => {
             </Link>
           </article>
         </div>
+
+        <section className="mt-12 rounded-3xl bg-white/80 p-8 shadow-xl shadow-[#d4bda8]/40 backdrop-blur">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-[#A3846C]">Live Preview</p>
+              <h2 className="mt-2 text-2xl font-semibold text-[#5C4B3D]">Track your bespoke piece in real-time</h2>
+              <p className="mt-3 text-sm text-[#7A6654] max-w-2xl">
+                Join Rama in the studio for a live walkthrough of your handcrafted order. Ask questions,
+                verify customizations, and celebrate the artisanal details together.
+              </p>
+            </div>
+            <Link
+              to={`/live/${encodeURIComponent('custom-order')}`}
+              className="inline-flex items-center justify-center rounded-full bg-[#5C4B3D] px-6 py-3 text-sm font-semibold text-[#F0E4D3] transition-all duration-300 hover:bg-[#3F3329]"
+            >
+              Join live studio
+            </Link>
+          </div>
+        </section>
       </div>
     </section>
   );

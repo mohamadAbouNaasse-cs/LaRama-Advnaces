@@ -29,6 +29,10 @@ require('dotenv').config();
 // Import core Express.js framework for creating the web server
 const express = require('express');
 
+// Import HTTP and WebSocket utilities for real-time communication support
+const http = require('http');
+const { Server } = require('socket.io');
+
 // Import CORS middleware to handle Cross-Origin Resource Sharing between frontend and backend
 const cors = require('cors');
 
@@ -44,12 +48,172 @@ const productRoutes = require('./routes/products');   // Product catalog and man
 const cartRoutes = require('./routes/cart');          // Shopping cart management endpoints
 const orderRoutes = require('./routes/orders');       // Order processing and management endpoints
 const newsletterRoutes = require('./routes/newsletter'); // Newsletter subscription management endpoints
+const adminRoutes = require('./routes/admin');        // Administrative authentication and future management endpoints
 
 /**
  * Express Application Instance
  * Creates the main Express application that will handle all HTTP requests
  */
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
+
+const liveSessions = new Map();
+
+const getSessionsSnapshot = () =>
+  Array.from(liveSessions.values()).map((session) => ({
+    roomId: session.roomId,
+    productId: session.productId,
+    status: session.status,
+    createdAt: session.createdAt,
+    buyer: session.buyer ? { name: session.buyer.userName } : null,
+  }));
+
+const broadcastSessionsUpdate = () => {
+  io.to('admin-watchers').emit('sessions:update', getSessionsSnapshot());
+};
+
+const cleanupSessionForSocket = (socketId) => {
+  for (const session of liveSessions.values()) {
+    if (session.buyer?.socketId === socketId || session.admin?.socketId === socketId) {
+      const remainingParticipant =
+        session.buyer?.socketId === socketId ? session.admin?.socketId : session.buyer?.socketId;
+      if (remainingParticipant) {
+        io.to(remainingParticipant).emit('session:partner-left', {
+          roomId: session.roomId,
+        });
+      }
+
+      liveSessions.delete(session.roomId);
+      broadcastSessionsUpdate();
+      break;
+    }
+  }
+};
+
+io.on('connection', (socket) => {
+  socket.on('registerAdminWatcher', () => {
+    socket.join('admin-watchers');
+    socket.emit('sessions:update', getSessionsSnapshot());
+  });
+
+  socket.on('unregisterAdminWatcher', () => {
+    socket.leave('admin-watchers');
+  });
+
+  socket.on('joinRoom', ({ roomId, productId, role, userName }) => {
+    if (!roomId || !role) {
+      return;
+    }
+
+    const normalizedRole = role === 'admin' ? 'admin' : 'buyer';
+    const participantName = userName || (normalizedRole === 'admin' ? 'Administrator' : 'Customer');
+    const session = liveSessions.get(roomId) || {
+      roomId,
+      productId: productId || roomId,
+      createdAt: new Date().toISOString(),
+      status: 'waiting',
+      buyer: null,
+      admin: null,
+    };
+
+    socket.join(roomId);
+
+    if (normalizedRole === 'buyer') {
+      session.buyer = {
+        socketId: socket.id,
+        userName: participantName,
+      };
+      session.productId = productId || session.productId;
+      session.status = session.admin ? 'active' : 'waiting';
+      liveSessions.set(roomId, session);
+
+      socket.emit('session:waiting', {
+        roomId,
+        productId: session.productId,
+      });
+
+      if (session.admin?.socketId) {
+        io.to(session.admin.socketId).emit('session:buyer-ready', {
+          roomId,
+          buyer: { name: participantName },
+        });
+        io.to(session.buyer.socketId).emit('session:admin-ready', {
+          roomId,
+        });
+        session.status = 'active';
+      }
+    } else {
+      session.admin = {
+        socketId: socket.id,
+        userName: participantName,
+      };
+      session.status = session.buyer ? 'active' : 'waiting';
+      liveSessions.set(roomId, session);
+
+      if (session.buyer?.socketId) {
+        io.to(session.buyer.socketId).emit('session:admin-ready', {
+          roomId,
+        });
+        socket.emit('session:buyer-ready', {
+          roomId,
+          buyer: { name: session.buyer.userName },
+        });
+      }
+    }
+
+    socket.emit('session:joined', {
+      roomId,
+      role: normalizedRole,
+      productId: session.productId,
+    });
+
+    broadcastSessionsUpdate();
+  });
+
+  socket.on('leaveRoom', ({ roomId }) => {
+    if (!roomId) return;
+    cleanupSessionForSocket(socket.id);
+    socket.leave(roomId);
+  });
+
+  socket.on('signal:offer', ({ roomId, sdp }) => {
+    const session = liveSessions.get(roomId);
+    if (!session) return;
+    const targetId = session.buyer?.socketId === socket.id ? session.admin?.socketId : session.buyer?.socketId;
+    if (targetId) {
+      io.to(targetId).emit('signal:offer', { roomId, sdp });
+    }
+  });
+
+  socket.on('signal:answer', ({ roomId, sdp }) => {
+    const session = liveSessions.get(roomId);
+    if (!session) return;
+    const targetId = session.buyer?.socketId === socket.id ? session.admin?.socketId : session.buyer?.socketId;
+    if (targetId) {
+      io.to(targetId).emit('signal:answer', { roomId, sdp });
+    }
+  });
+
+  socket.on('signal:ice-candidate', ({ roomId, candidate }) => {
+    const session = liveSessions.get(roomId);
+    if (!session) return;
+    const targetId = session.buyer?.socketId === socket.id ? session.admin?.socketId : session.buyer?.socketId;
+    if (targetId) {
+      io.to(targetId).emit('signal:ice-candidate', { roomId, candidate });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    cleanupSessionForSocket(socket.id);
+  });
+});
 
 /**
  * Server Port Configuration
@@ -171,6 +335,7 @@ app.use('/api/products', productRoutes); // Mount product management routes
 app.use('/api/cart', cartRoutes);        // Mount shopping cart routes
 app.use('/api/orders', orderRoutes);     // Mount order processing routes
 app.use('/api/newsletter', newsletterRoutes); // Mount newsletter routes
+app.use('/api/admin', adminRoutes);      // Mount administrative authentication routes
 
 /**
  * 404 Not Found Handler
@@ -259,7 +424,7 @@ const startServer = async () => {
      * Starts the Express server and binds it to the specified port.
      * The callback function executes once the server successfully starts.
      */
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       // Server startup success logging with comprehensive information
       console.log('\n🚀 LaRama Backend Server Started Successfully!');
       console.log(`📡 Server running on port ${PORT}`);
@@ -288,6 +453,9 @@ const startServer = async () => {
       console.log('   POST /api/newsletter/subscribe - Add email to newsletter list');
       console.log('   POST /api/newsletter/unsubscribe - Remove email from newsletter');
       console.log('   GET  /api/newsletter/stats - Get newsletter subscription statistics');
+      console.log('   POST /api/admin/login - Administrator authentication');
+      console.log('   GET  /api/admin/verify - Verify administrator session');
+      console.log('   🔄 Socket.IO signaling server active for live sessions');
       console.log('\n✨ Ready to receive requests!');
     });
   } catch (error) {

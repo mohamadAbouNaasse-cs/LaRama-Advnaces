@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from "react-router-dom";
 
 // Layout components for consistent UI structure
 import Header from "./components/layout/Header";
@@ -29,9 +29,29 @@ import Dashboard from "./pages/Dashboard";
 // Authentication and routing protection
 import RequireAuth from "./components/auth/RequireAuth";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import AdminLayout from "./admin/layout/AdminLayout.jsx";
+import AdminLogin from "./admin/pages/AdminLogin.jsx";
+import AdminDashboard from "./admin/pages/AdminDashboard.jsx";
+import AdminProducts from "./admin/pages/AdminProducts.jsx";
+import AdminOrders from "./admin/pages/AdminOrders.jsx";
+import AdminLiveSessions from "./admin/pages/AdminLiveSessions.jsx";
+import AdminLiveRoom from "./admin/pages/AdminLiveRoom.jsx";
+import RequireAdmin from "./admin/components/RequireAdmin.jsx";
+import { AdminAuthProvider } from "./admin/context/AdminAuthContext.jsx";
+import LiveSession from "./live/pages/LiveSession.jsx";
 
 // Global styling and CSS imports
 import "./App.css";
+
+const StorefrontLayout = ({ theme, toggleTheme, isDark }) => (
+  <div className="min-h-screen flex flex-col app-surface">
+    <Header theme={theme} onToggleTheme={toggleTheme} isDark={isDark} />
+    <main className="flex-1">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+);
 
 function App() {
   /**
@@ -96,46 +116,69 @@ function App() {
    */
   return (
     <Router>
-      {/* Global authentication context provider */}
       <AuthProvider>
-        <div className="min-h-screen flex flex-col app-surface">
-          {/* Global header with theme toggle functionality */}
-          <Header theme={theme} onToggleTheme={toggleTheme} isDark={isDark} />
-          
-          {/* Main content area with flexible layout */}
-          <main className="flex-1">
-            <Routes>
-              {/* Public routes accessible to all users */}
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/returns" element={<Returns />} />
-              <Route path="/shipping" element={<Shipping />} />
-              <Route path="/about" element={<About />} />
-              
-              {/* E-commerce functionality routes */}
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/customize" element={<Customize />} />
-              <Route path="/auth" element={<Auth />} />
-              
-              {/* Protected routes requiring authentication */}
+        <AdminAuthProvider>
+          <Routes>
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin"
+              element={(
+                <RequireAdmin>
+                  <AdminLayout />
+                </RequireAdmin>
+              )}
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="live-sessions" element={<AdminLiveSessions />} />
+              <Route path="live-sessions/room/:roomId" element={<AdminLiveRoom />} />
+            </Route>
+
+            <Route
+              path="/"
+              element={(
+                <StorefrontLayout
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  isDark={isDark}
+                />
+              )}
+            >
+              <Route index element={<Home />} />
+              <Route path="products" element={<Products />} />
+              <Route path="terms" element={<Terms />} />
+              <Route path="privacy" element={<Privacy />} />
+              <Route path="faq" element={<FAQ />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="returns" element={<Returns />} />
+              <Route path="shipping" element={<Shipping />} />
+              <Route path="about" element={<About />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="customize" element={<Customize />} />
+              <Route path="auth" element={<Auth />} />
               <Route
-                path="/dashboard"
+                path="live/:productId"
+                element={(
+                  <RequireAuth>
+                    <LiveSession />
+                  </RequireAuth>
+                )}
+              />
+              <Route
+                path="dashboard"
                 element={(
                   <RequireAuth>
                     <Dashboard />
                   </RequireAuth>
                 )}
               />
-            </Routes>
-          </main>
-          
-          {/* Global footer component */}
-          <Footer />
-        </div>
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AdminAuthProvider>
       </AuthProvider>
     </Router>
   );
