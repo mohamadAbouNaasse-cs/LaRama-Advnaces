@@ -1,22 +1,26 @@
-/**
- * Admin Products Page - LaRama Frontend
- * Placeholder inventory table ready for future CRUD integration.
- */
+import React, { useEffect } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import createAdminStore from '../store';
+import { fetchProducts } from '../store/productsSlice';
 
-const placeholderProducts = [
-  { id: 'P-1001', name: 'Handcrafted Necklace', stock: 12, status: 'Active' },
-  { id: 'P-1002', name: 'Personalized Phone Case', stock: 8, status: 'Active' },
-  { id: 'P-1003', name: 'Custom Prayer Beads', stock: 0, status: 'Out of Stock' },
-];
+const store = createAdminStore();
 
-const AdminProducts = () => {
+const ProductsTable = () => {
+  const dispatch = useDispatch();
+  const items = useSelector((state) => state.products.items);
+  const status = useSelector((state) => state.products.status);
+
+  useEffect(() => {
+    if (status === 'idle') dispatch(fetchProducts());
+  }, [dispatch, status]);
+
   return (
     <div>
       <div className="admin-card">
         <h2>Product Catalog Overview</h2>
         <p>
-          This table will be connected to the real product inventory. Add, edit,
-          and archive handcrafted products from here in future releases.
+          This table is connected to the GraphQL products module via a
+          lightweight Redux setup. Install required packages if not present.
         </p>
       </div>
 
@@ -25,29 +29,35 @@ const AdminProducts = () => {
           <tr>
             <th scope="col">ID</th>
             <th scope="col">Product</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Status</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
           </tr>
         </thead>
         <tbody>
-          {placeholderProducts.map((product) => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
-              <td>{product.name}</td>
-              <td>{product.stock}</td>
-              <td>
-                <span
-                  className={`admin-status ${product.status === 'Active' ? 'success' : 'danger'}`}
-                >
-                  {product.status}
-                </span>
-              </td>
+          {items && items.length ? (
+            items.map((product) => (
+              <tr key={product.id}>
+                <td>{product.id}</td>
+                <td>{product.name}</td>
+                <td>{product.price}</td>
+                <td>{product.description || '-'}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4">No products found.</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
   );
 };
+
+const AdminProducts = () => (
+  <Provider store={store}>
+    <ProductsTable />
+  </Provider>
+);
 
 export default AdminProducts;
