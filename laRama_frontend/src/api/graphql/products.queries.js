@@ -23,6 +23,13 @@ export const CREATE_PRODUCT = gql`
       id
       name
       price
+      description
+      imageUrl
+      category
+      stockQuantity
+      isActive
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -33,6 +40,13 @@ export const UPDATE_PRODUCT = gql`
       id
       name
       price
+      description
+      imageUrl
+      category
+      stockQuantity
+      isActive
+      createdAt
+      updatedAt
     }
   }
 `;

@@ -199,6 +199,28 @@ Import the following endpoints into Postman:
 - DELETE `/api/cart/items/:cart_item_id` - Remove item from cart
 - DELETE `/api/cart/clear` - Clear entire cart
 
+---
+
+## 🖼️ Product media backfill script
+
+Existing products in the database can be updated to reference the local frontend assets and correct categories without dropping any data.
+
+1. Ensure your `.env` for the Express app is configured with DB credentials.
+2. Run the backfill:
+
+```bash
+cd laRama_backend
+node scripts/update_product_metadata.js
+```
+
+The script updates `image_url`, `category`, ensures `is_active` is set, and fills missing `stock_quantity` values using the mapped inventory counts.
+
+## ✅ Quick verification checklist
+
+- **User shop images:** Hit `GET /api/products` and confirm each product returns `image_url`, `category`, `stock_quantity`, and `is_active` populated so the storefront renders the real images.
+- **Admin products:** Use the Nest admin dashboard to create or edit products, including `description`, `category`, `image_url`, `stock_quantity`, and `is_active`. New items should appear on the user site using the provided image path (e.g., `/images/purses/black.jpg`).
+- **Order stock decrement:** Place an order from the cart (WhatsApp flow). After confirming, the API creates the order and decrements stock atomically; insufficient stock returns an error without reducing inventory.
+
 ### Order Endpoints (All require authentication)
 - POST `/api/orders` - Create order from cart
 - GET `/api/orders` - Get user orders (with pagination)

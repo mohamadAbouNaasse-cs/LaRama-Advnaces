@@ -109,7 +109,7 @@ const Cart = () => {
     }
   };
 
-  const proceedToCheckout = () => {
+  const proceedToCheckout = async () => {
     if (!cart || !cart.items || cart.items.length === 0) {
       alert('Your cart is empty!');
       return;
@@ -167,12 +167,41 @@ const Cart = () => {
       `Click OK to proceed with your order.`
     );
     
-    if (confirmed) {
-      // Open WhatsApp in new tab
+    if (!confirmed) return;
+
+    // Collect a shipping address for backend order creation
+    const shippingAddress = prompt(
+      'Please provide your shipping address for this order (required to confirm stock):',
+      ''
+    );
+
+    if (!shippingAddress || shippingAddress.trim().length < 10) {
+      alert('Shipping address must be at least 10 characters. Order was not submitted.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const orderResponse = await apiService.createOrder({ shipping_address: shippingAddress.trim() });
+
+      if (!orderResponse.success) {
+        alert(orderResponse.message || 'Failed to create order.');
+        return;
+      }
+
+      // Refresh cart to reflect cleared cart after successful order
+      await fetchCart();
+
+      // Open WhatsApp in new tab only after backend confirms order
       window.open(whatsappUrl, '_blank');
-      
-      // Show success message with order reference
-      alert(`Order submitted successfully!\n\nOrder Reference: ${orderRef}\n\nWe'll contact you via WhatsApp to confirm details and provide payment instructions.`);
+
+      alert(
+        `Order submitted successfully!\n\nOrder Reference: ${orderRef}\n\nWe'll contact you via WhatsApp to confirm details and provide payment instructions.`
+      );
+    } catch (error) {
+      alert(error.message || 'Unable to create order.');
+    } finally {
+      setLoading(false);
     }
   };
 

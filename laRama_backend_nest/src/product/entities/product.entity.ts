@@ -35,7 +35,7 @@ export class ProductEntity {
   category?: string | null;
 
   @Field()
-  @Column({ type: 'int', default: 0, name: 'stock_quantity' })
+  @Column({ type: 'int', default: 1, name: 'stock_quantity' })
   stockQuantity: number;
 
   @Field()

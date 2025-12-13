@@ -37,8 +37,8 @@ input CreateProductInput {
   description: String
   imageUrl: String
   category: String
-  stockQuantity: Float
-  isActive: Boolean
+  stockQuantity: Float = 1
+  isActive: Boolean = true
 }
 
 input UpdateProductInput {

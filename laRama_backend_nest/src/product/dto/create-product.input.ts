@@ -26,11 +26,12 @@ export class CreateProductInput {
   @IsString()
   category?: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, defaultValue: 1 })
   @IsOptional()
+  @IsNumber()
   stockQuantity?: number;
 
-  @Field({ nullable: true })
+  @Field({ nullable: true, defaultValue: true })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;

@@ -161,7 +161,7 @@ const createOrder = async (req, res) => {
        * Creates detailed record for each product in the order
        */
       await client.query(
-        `INSERT INTO order_items (order_id, product_id, quantity, price) 
+        `INSERT INTO order_items (order_id, product_id, quantity, price)
          VALUES ($1, $2, $3, $4)`,
         [order.id, item.product_id, item.quantity, item.price]
       );
@@ -169,11 +169,23 @@ const createOrder = async (req, res) => {
       /**
        * Inventory Stock Update
        * Decreases product stock quantities to reflect the purchase
+       * Additional safety: ensure stock never goes negative even under concurrency
        */
-      await client.query(
-        'UPDATE products SET stock_quantity = stock_quantity - $1 WHERE id = $2',
+      const stockUpdate = await client.query(
+        `UPDATE products
+         SET stock_quantity = stock_quantity - $1
+         WHERE id = $2 AND stock_quantity >= $1
+         RETURNING stock_quantity`,
         [item.quantity, item.product_id]
       );
+
+      if (stockUpdate.rowCount === 0) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient stock for ${item.product_name}. Please update your cart and try again.`,
+        });
+      }
     }
 
     /**

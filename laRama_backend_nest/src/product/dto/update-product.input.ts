@@ -33,6 +33,7 @@ export class UpdateProductInput {
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsNumber()
   stockQuantity?: number;
 
   @Field({ nullable: true })

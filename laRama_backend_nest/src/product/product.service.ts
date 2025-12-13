@@ -27,7 +27,7 @@ export class ProductService {
       price: input.price,
       imageUrl: input.imageUrl ?? null,
       category: input.category ?? null,
-      stockQuantity: input.stockQuantity ?? 0,
+      stockQuantity: input.stockQuantity ?? 1,
       isActive: typeof input.isActive === 'boolean' ? input.isActive : true,
     } as Partial<ProductEntity>);
 
