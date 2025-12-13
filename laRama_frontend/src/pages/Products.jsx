@@ -186,15 +186,15 @@ const Products = () => {
 
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-12">
           {categories.map(category => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`px-6 py-3 rounded-full font-semibold transition-colors ${
+              className={`px-4 sm:px-5 py-2.5 rounded-full text-sm font-semibold border transition-all duration-200 shadow-sm ${
                 activeCategory === category.id
-                  ? 'bg-[#D9A299] text-white'
-                  : 'bg-[#F0E4D3] text-[#5C4B3D] hover:bg-[#DCC5B2]'
+                  ? 'bg-[#5C4B3D] text-white border-[#5C4B3D] shadow-md'
+                  : 'bg-white text-[#5C4B3D] border-[#E2D8CC] hover:bg-[#F4ECE2]'
               }`}
             >
               {category.name} ({category.count || 0})
@@ -202,23 +202,23 @@ const Products = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
           {filteredProducts.map(product => (
-            <div 
-              key={product.id} 
-              className="bg-white rounded-lg shadow-md overflow-hidden group cursor-pointer transition-transform duration-300 hover:shadow-lg"
+            <div
+              key={product.id}
+              className="bg-white border border-[#eadfd1] rounded-xl shadow-sm overflow-hidden group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg h-full flex flex-col"
             >
-              <div 
-                className="h-72 overflow-hidden relative"
+              <div
+                className="h-64 overflow-hidden relative bg-gradient-to-br from-[#fffaf5] via-white to-[#f3ebe1]"
                 onClick={() => openProductDetail(product)}
               >
-                <img 
-                  src={product.image_url || fallbackSvg} 
+                <img
+                  src={product.image_url || fallbackSvg}
                   alt={product.name}
-                  className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+                  className={`w-full h-full ${product.image_url ? 'object-cover' : 'object-contain'} p-5 transition-transform duration-300 group-hover:scale-105`}
                   onError={(e) => {
                     e.target.src = fallbackSvg;
-                    e.target.className = "w-full h-full object-cover";
+                    e.target.className = "w-full h-full object-contain p-5";
                   }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -227,16 +227,19 @@ const Products = () => {
                   </button>
                 </div>
               </div>
-              <div className="p-4">
+              <div className="p-5 flex flex-col flex-1">
                 <h3 className="font-serif font-semibold text-[#5C4B3D] mb-2 truncate" onClick={() => openProductDetail(product)}>
                   {product.name}
                 </h3>
-                <p className="text-[#D9A299] font-bold mb-2">{formatPrice(product.price)}</p>
-                <p className="text-xs text-[#8C8A87] mb-3">Stock: {product.stock_quantity}</p>
+                <p className="text-sm text-[#6b6259] line-clamp-2 mb-4 min-h-[40px]">{product.description || 'Handmade piece crafted with care and attention to detail.'}</p>
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <p className="text-[#D9A299] font-bold">{formatPrice(product.price)}</p>
+                  <p className="text-xs text-[#8C8A87]">Stock: {product.stock_quantity}</p>
+                </div>
                 <button
                   onClick={() => handleAddToCart(product.id)}
                   disabled={addingToCart[product.id] || product.stock_quantity === 0}
-                  className="w-full bg-[#D9A299] hover:bg-[#c18981] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors duration-300"
+                  className="mt-auto w-full bg-[#D9A299] hover:bg-[#c18981] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-300 shadow-sm"
                 >
                   {addingToCart[product.id] ? 'Adding...' : product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </button>
@@ -284,7 +287,7 @@ const Products = () => {
                   
                   <div>
                     <p className="text-[#D9A299] font-bold text-2xl mb-4">{formatPrice(selectedProduct.price)}</p>
-                    <p className="text-[#5C4B3D] mb-4">{selectedProduct.description}</p>
+                    <p className="text-[#5C4B3D] mb-4 line-clamp-2">{selectedProduct.description}</p>
                     <p className="text-[#5C4B3D] mb-6"><strong>Stock:</strong> {selectedProduct.stock_quantity} available</p>
                     
                     <div className="mb-6">

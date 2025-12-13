@@ -105,4 +105,7 @@ jspm_packages/
 # Temporary Files
 # Temporary working directories
 tmp/
-temp/
+temp/# build outputs
+laRama_backend_nest/dist/
+laRama_backend_nest/node_modules/
+laRama_frontend/node_modules/
