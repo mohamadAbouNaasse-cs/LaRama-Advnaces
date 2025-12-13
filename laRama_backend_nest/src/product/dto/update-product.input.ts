@@ -1,15 +1,20 @@
-import { InputType, Field, Float } from '@nestjs/graphql';
-import { IsOptional, IsString, IsNumber, IsBoolean } from 'class-validator';
+import { InputType, Field, ID, Float } from '@nestjs/graphql';
+import { IsOptional, IsString, IsBoolean, IsNumber } from 'class-validator';
 
 @InputType()
-export class CreateProductInput {
-  @Field()
-  @IsString()
-  name: string;
+export class UpdateProductInput {
+  @Field(() => ID)
+  id: string;
 
-  @Field(() => Float)
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @Field(() => Float, { nullable: true })
+  @IsOptional()
   @IsNumber()
-  price: number;
+  price?: number;
 
   @Field({ nullable: true })
   @IsOptional()
