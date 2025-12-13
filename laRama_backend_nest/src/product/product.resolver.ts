@@ -1,10 +1,13 @@
 import { Resolver, Query, Args, Mutation, ID } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { AdminGuard } from './guards/admin.guard';
 import { ProductEntity } from './entities/product.entity';
 import { ProductService } from './product.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 
 @Resolver(() => ProductEntity)
+@UseGuards(AdminGuard)
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 
