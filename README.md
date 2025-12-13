@@ -1,800 +1,202 @@
-# 🌟 LaRama Handcrafted - E-commerce Platform
+# LaRama Advances Monorepo
 
-[![React](https://img.shields.io/badge/React-19.1.1-blue.svg)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-LTS-green.svg)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-5.1.0-lightgrey.svg)](https://expressjs.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue.svg)](https://www.postgresql.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.12-38B2AC.svg)](https://tailwindcss.com/)
+Handmade beadwork e-commerce platform built for **UOB CSIS279: Advances in Computer Science**. The monorepo contains:
 
-> **A comprehensive e-commerce platform for handmade beadwork products featuring custom design tools, secure authentication, and WhatsApp integration.**
+- **laRama_backend** – Express REST API for customers (port **5000**)
+- **laRama_backend_nest** – NestJS GraphQL admin API (port **4001**, `/graphql` with `x-admin-key` header)
+- **laRama_frontend** – React + Vite storefront/admin UI (port **5173**)
 
----
+The stack demonstrates modular backends, PostgreSQL data modeling, and a component-driven frontend with Redux and GraphQL coverage.
 
-## 📖 Table of Contents
+## Table of Contents
+- [Architecture overview](#architecture-overview)
+- [Tech stack & versions](#tech-stack--versions)
+- [Project structure](#project-structure)
+- [Environment setup](#environment-setup)
+- [Install & run (PowerShell-ready)](#install--run-powershell-ready)
+- [API documentation](#api-documentation)
+- [Database schema](#database-schema)
+- [Redux + GraphQL evidence](#redux--graphql-evidence)
+- [Testing & verification checklist](#testing--verification-checklist)
+- [Troubleshooting](#troubleshooting)
+- [Method-level documentation](#method-level-documentation)
 
-- [🌟 LaRama Handcrafted - E-commerce Platform](#-larama-handcrafted---e-commerce-platform)
-  - [📖 Table of Contents](#-table-of-contents)
-  - [🚀 Project Overview](#-project-overview)
-  - [✨ Key Features](#-key-features)
-  - [🛠️ Technology Stack](#️-technology-stack)
-  - [📁 Project Structure](#-project-structure)
-  - [⚡ Quick Start](#-quick-start)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Environment Setup](#environment-setup)
-    - [Database Setup](#database-setup)
-    - [Running the Application](#running-the-application)
-  - [🎯 Core Functionality](#-core-functionality)
-  - [🔧 API Endpoints](#-api-endpoints)
-  - [🎨 Frontend Architecture](#-frontend-architecture)
-  - [🗄️ Database Schema](#️-database-schema)
-  - [🔐 Authentication System](#-authentication-system)
-  - [📱 Responsive Design](#-responsive-design)
-  - [🌙 Theme System](#-theme-system)
-  - [📧 Newsletter Integration](#-newsletter-integration)
-  - [📞 WhatsApp Business Integration](#-whatsapp-business-integration)
-  - [🚀 Deployment](#-deployment)
-  - [🧪 Testing](#-testing)
-  - [📚 Documentation](#-documentation)
-  - [🤝 Contributing](#-contributing)
-  - [📄 License](#-license)
-  - [👥 Team](#-team)
-  - [📞 Support](#-support)
-
----
-
-## 🚀 Project Overview
-
-**LaRama Handcrafted** is a modern, full-stack e-commerce platform specifically designed for artisan beadwork products. Developed as an academic project at University of Balamand for the Advances in Computer Science course, it showcases the perfect blend of traditional family craftsmanship and cutting-edge web technology, supporting the real LaRama handcrafted business owned by Rama.
-
-### 🎯 Mission
-To provide a seamless digital shopping experience for handmade beadwork enthusiasts while empowering artisans with powerful customization tools and direct customer communication channels.
-
-### 🌍 Market Focus
-- **Primary Market**: Lebanon and MENA region
-- **Target Audience**: Fashion enthusiasts, gift seekers, spiritual product customers
-- **Product Categories**: Purses, Prayer Beads, Decorative Items, Custom Accessories
-
----
-
-## ✨ Key Features
-
-### 🛍️ **E-commerce Core**
-- **Product Catalog**: Dynamic product browsing with category filtering
-- **Shopping Cart**: Persistent cart with quantity management
-- **Secure Checkout**: JWT-based authentication and session management
-- **Order Tracking**: Real-time order status updates
-
-### 🎨 **Customization Engine**
-- **Interactive Design Tool**: 3-category customization system (Purses, Prayer Beads, Others)
-- **Real-time Preview**: Live product visualization with selected options
-- **Material Selection**: Comprehensive bead types, colors, and finishing options
-- **Price Calculator**: Dynamic pricing based on customization choices
-
-### 💬 **Communication Features**
-- **WhatsApp Integration**: Direct customer communication with formatted order details
-- **Newsletter System**: Email subscription with preference management
-- **Contact Forms**: Multi-channel customer support system
-
-### 🔒 **Security & Performance**
-- **JWT Authentication**: Secure user sessions with token refresh
-- **Input Validation**: Comprehensive client and server-side validation
-- **Error Handling**: Graceful error management with user feedback
-- **Responsive Design**: Mobile-first approach with cross-device compatibility
-
----
-
-## 🛠️ Technology Stack
-
-### **Frontend**
-- **Framework**: React 19.1.1 with Hooks and Context API
-- **Build Tool**: Vite 7.1.2 for lightning-fast development
-- **Styling**: Tailwind CSS 4.1.12 with custom design system
-- **Routing**: React Router DOM 7.8.2 with protected routes
-- **State Management**: React Context API with localStorage persistence
-- **Icons**: Font Awesome 6.7.1 for consistent iconography
-
-### **Backend**
-- **Runtime**: Node.js with Express 5.1.0 framework
-- **Database**: PostgreSQL with optimized queries
-- **Authentication**: JWT with bcrypt password hashing
-- **Validation**: Express-validator for input sanitization
-- **CORS**: Configured for secure cross-origin requests
-- **Environment**: dotenv for configuration management
-
-### **Development Tools**
-- **Linting**: ESLint 9.33.0 with React-specific rules
-- **Version Control**: Git with comprehensive commit history
-- **Package Management**: npm with lock file for consistency
-- **Code Formatting**: Prettier integration for code consistency
-
----
-
-## 📁 Project Structure
-
+## Architecture overview
 ```
-LaRama/
-├── laRama_frontend/                 # React frontend application
-│   ├── public/                      # Static assets and images
-│   │   ├── images/                  # Product and category images
-│   │   │   ├── decorations/        # Decorative item images
-│   │   │   ├── nektie/             # Necktie product images
-│   │   │   ├── phone-case/         # Phone case images
-│   │   │   ├── prayer/             # Prayer beads images
-│   │   │   └── purses/             # Purse collection images
-│   │   └── index.html              # Application entry point
-│   ├── src/                        # Source code
-│   │   ├── components/             # Reusable React components
-│   │   │   ├── auth/               # Authentication components
-│   │   │   │   └── RequireAuth.jsx # Route protection wrapper
-│   │   │   ├── layout/             # Layout components
-│   │   │   │   ├── Header.jsx      # Site navigation header
-│   │   │   │   └── Footer.jsx      # Site footer with newsletter
-│   │   │   └── ui/                 # UI utility components
-│   │   │       └── ThemeToggle.jsx # Dark/light mode toggle
-│   │   ├── context/                # React Context providers
-│   │   │   ├── AuthContext.js      # Context definition
-│   │   │   └── AuthContext.jsx     # Authentication provider
-│   │   ├── hooks/                  # Custom React hooks
-│   │   │   └── useAuth.js          # Authentication hook
-│   │   ├── pages/                  # Application pages/routes
-│   │   │   ├── About.jsx           # Company information page
-│   │   │   ├── Auth.jsx            # Login/registration forms
-│   │   │   ├── Cart.jsx            # Shopping cart interface
-│   │   │   ├── Contact.jsx         # Customer contact form
-│   │   │   ├── Customize.jsx       # Product customization tool
-│   │   │   ├── Dashboard.jsx       # User dashboard
-│   │   │   ├── FAQ.jsx             # Frequently asked questions
-│   │   │   ├── Home.jsx            # Landing page
-│   │   │   ├── Privacy.jsx         # Privacy policy
-│   │   │   ├── Products.jsx        # Product catalog
-│   │   │   ├── Returns.jsx         # Return policy
-│   │   │   ├── Shipping.jsx        # Shipping information
-│   │   │   └── Terms.jsx           # Terms of service
-│   │   ├── services/               # API communication layer
-│   │   │   └── api.js              # HTTP client and endpoints
-│   │   ├── App.jsx                 # Main application component
-│   │   ├── App.css                 # Global application styles
-│   │   ├── index.css               # Base styles and theme variables
-│   │   └── main.jsx                # Application entry point
-│   ├── eslint.config.js            # ESLint configuration
-│   ├── index.html                  # HTML template
-│   ├── package.json                # Dependencies and scripts
-│   └── vite.config.js              # Vite build configuration
-├── laRama_backend/                 # Node.js backend API
-│   ├── config/                     # Configuration files
-│   │   └── database.js             # Database connection setup
-│   ├── controllers/                # Request handlers
-│   │   ├── authController.js       # Authentication logic
-│   │   ├── cartController.js       # Shopping cart operations
-│   │   ├── orderController.js      # Order management
-│   │   └── productController.js    # Product data handling
-│   ├── middleware/                 # Express middleware
-│   │   ├── auth.js                 # JWT authentication middleware
-│   │   └── validation.js           # Input validation middleware
-│   ├── routes/                     # API route definitions
-│   │   ├── auth.js                 # Authentication endpoints
-│   │   ├── cart.js                 # Cart management endpoints
-│   │   ├── orders.js               # Order processing endpoints
-│   │   └── products.js             # Product catalog endpoints
-│   ├── .env.example                # Environment variables template
-│   ├── database.sql                # Database schema and seed data
-│   ├── package.json                # Backend dependencies
-│   └── server.js                   # Express server configuration
-└── README.md                       # Project documentation (this file)
++----------------+        +------------------------+        +-----------------------+
+| React + Vite   | <----> | Express REST API       | <----> | PostgreSQL (uuid-ossp)|
+| (5173)         |        | Customer endpoints 5000|        | Orders, products, etc.|
++----------------+        +------------------------+        +-----------------------+
+        ^                           ^
+        |                           |
+        |                           v
+        |                  +------------------------+
+        |                  | NestJS GraphQL Admin   |
+        |                  | /graphql, port 4001    |
+        |                  | Protected by x-admin-key|
+        |                  +------------------------+
+```
+- **Customer flow**: React app calls Express REST for auth, products, cart, orders, newsletter. WhatsApp checkout message is generated from cart/order data.
+- **Admin flow**: React admin pages use Apollo Client + Redux to manage products over GraphQL (`/graphql`) with `x-admin-key`.
+
+## Tech stack & versions
+**Frontend (laRama_frontend)**
+- React **18.2.0**, React Router DOM **7.8.2**, Vite **7.1.2**, Tailwind **4.1.12**
+- Redux Toolkit **1.9.7**, React Redux **8.1.3**
+- Apollo Client **3.8.0**, GraphQL **16.7.1**
+
+**Customer REST backend (laRama_backend)**
+- Node.js (>=16), Express **5.1.0**, Socket.IO **4.7.5**, PostgreSQL via `pg` **8.16.3**
+- JWT auth (`jsonwebtoken` **9.0.2**), bcryptjs **3.0.3**, dotenv **17.2.3**, cors **2.8.5**
+
+**Admin GraphQL backend (laRama_backend_nest)**
+- NestJS **10.x**, Apollo GraphQL **12.0.7**, TypeORM **0.3.18**, class-validator **0.14.0**
+
+## Project structure
+```
+LaRama-Advnaces/
+├─ README.md
+├─ docs/                      # API & technical notes (created in this update)
+├─ laRama_backend/            # Express REST API (port 5000)
+│  ├─ server.js
+│  ├─ routes/ (auth, products, cart, orders, newsletter, admin)
+│  ├─ controllers/            # Business logic & validation
+│  ├─ config/database.js      # PostgreSQL pool & health check
+│  ├─ database.sql            # Schema + seed data
+│  └─ scripts/                # Optional DB helpers (migrate/seed)
+├─ laRama_backend_nest/       # NestJS GraphQL API (port 4001)
+│  ├─ src/app.module.ts
+│  ├─ src/product/*           # Entity, resolver, service, guard
+│  └─ src/utils/db.utils.ts   # TypeORM config
+└─ laRama_frontend/           # React + Vite frontend (port 5173)
+   ├─ src/api/graphql/*       # Apollo client + queries
+   ├─ src/store/*             # Redux store + product slice
+   ├─ src/pages/, components/ # Storefront and admin UI
+   └─ vite.config.js
 ```
 
----
+## Environment setup
+Create three `.env` files using these templates (PowerShell-friendly here-docs work in most shells).
 
-## ⚡ Quick Start
-
-### Prerequisites
-
-Ensure you have the following installed on your system:
-
-- **Node.js** (v18.0.0 or higher) - [Download here](https://nodejs.org/)
-- **PostgreSQL** (v13.0 or higher) - [Download here](https://www.postgresql.org/download/)
-- **Git** - [Download here](https://git-scm.com/)
-- **Code Editor** (VS Code recommended) - [Download here](https://code.visualstudio.com/)
-
-### Installation
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/mohamadAbouNaasse-cs/LaRama-Advances.git
-   cd LaRama-Advances
-   ```
-
-2. **Install Backend Dependencies**
-   ```bash
-   cd laRama_backend
-   npm install
-   ```
-
-3. **Install Frontend Dependencies**
-   ```bash
-   cd ../laRama_frontend
-   npm install
-   ```
-
-### Environment Setup
-
-1. **Backend Configuration**
-   ```bash
-   cd laRama_backend
-   cp .env.example .env
-   ```
-   
-   Edit `.env` with your configuration:
-   ```env
-   # Database Configuration
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=larama_db
-   DB_USER=your_username
-   DB_PASSWORD=your_password
-   
-   # JWT Configuration
-   JWT_SECRET=your_super_secure_jwt_secret_key_here
-   JWT_EXPIRES_IN=24h
-   
-   # Server Configuration
-   PORT=5000
-   NODE_ENV=development
-   
-   # CORS Configuration
-   FRONTEND_URL=http://localhost:5173
-   ```
-
-### Database Setup
-
-1. **Create Database**
-   ```sql
-   -- Connect to PostgreSQL as superuser
-   CREATE DATABASE larama_db;
-   CREATE USER your_username WITH PASSWORD 'your_password';
-   GRANT ALL PRIVILEGES ON DATABASE larama_db TO your_username;
-   ```
-
-2. **Import Schema and Data**
-   ```bash
-   # From laRama_backend directory
-   psql -U your_username -d larama_db -f database.sql
-   ```
-
-### Running the Application
-
-1. **Start Backend Server**
-   ```bash
-   cd laRama_backend
-   npm run dev
-   # Server will run on http://localhost:5000
-   ```
-
-2. **Start Frontend Development Server**
-   ```bash
-   cd laRama_frontend
-   npm run dev
-   # Application will run on http://localhost:5173
-   ```
-
-3. **Access the Application**
-   - **Frontend**: http://localhost:5173
-   - **Backend API**: http://localhost:5000/api
-
----
-
-## 🧩 How to run backends & frontend (ports and admin key)
-
-This project contains two separate backends (the original Express backend and an isolated Nest backend) and the React frontend. Follow these steps to keep both backends working and to use the Admin GraphQL endpoints.
-
-- Express backend (customer-facing API — no changes made)
-
-   ```powershell
-   cd laRama_backend
-   npm install
-   npm run dev   # or your usual start command (README shows : npm run dev)
-   ```
-
-   - Default port (as documented above): `5000` (check `laRama_backend/.env` and `server.js` if different)
-
-- Nest backend (admin GraphQL API, isolated in `laRama_backend_nest`)
-
-   ```powershell
-   cd laRama_backend_nest
-   npm install
-   npm run start:dev
-   ```
-
-   - Listens on the `PORT` from `laRama_backend_nest/.env` (defaults to `4001`).
-   - GraphQL Playground: http://localhost:4001/graphql
-
-- Frontend (Vite)
-
-   ```powershell
-   cd laRama_frontend
-   npm install
-   npm run dev
-   ```
-
-   - Vite default port: `5173` (open the app at http://localhost:5173)
-
-Admin key header
-
-- The admin-protected GraphQL endpoints require an admin key header named `x-admin-key`.
-- Set the admin key in the Nest backend `.env`:
-
-   ```env
-   # laRama_backend_nest/.env
-   ADMIN_KEY=your_secret_key_here
-   ```
-
-- Set the same value in the frontend `.env` so the Apollo client sends it automatically (Vite):
-
-   ```env
-   # laRama_frontend/.env
-   VITE_ADMIN_KEY=your_secret_key_here
-   ```
-
-- When both servers are running and `VITE_ADMIN_KEY` matches `ADMIN_KEY`, the Admin Products page and GraphQL mutations (create/update/delete) will work.
-
-Ports summary
-
-- Frontend (Vite): `5173` (default)
-- Express backend (customer): `5000` (default in README; verify `laRama_backend/.env`)
-- Nest GraphQL backend (admin): `4001` (configured in `laRama_backend_nest/.env`)
-
-
----
-
-## 🎯 Core Functionality
-
-### **User Journey**
-1. **Browse Products** → View curated handmade collections
-2. **Customize Items** → Use interactive design tool for personalization
-3. **Add to Cart** → Manage quantities and selections
-4. **Secure Checkout** → JWT-authenticated purchasing process
-5. **Order Communication** → WhatsApp integration for direct contact
-
-### **Admin Capabilities**
-- **Product Management**: Add, edit, and categorize products
-- **Order Processing**: Track and manage customer orders
-- **Newsletter Management**: Manage subscriber communications
-- **Analytics Dashboard**: Monitor sales and user engagement
-
----
-
-## 🔧 API Endpoints
-
-### **Authentication**
-```http
-POST   /api/auth/register     # User registration
-POST   /api/auth/login        # User authentication
-POST   /api/auth/logout       # Session termination
-GET    /api/auth/verify       # Token verification
+**laRama_backend/.env**
+```
+PORT=5000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=LaRama_db_advances
+DB_USER=postgres
+DB_PASSWORD=your_db_password
+JWT_SECRET=super_secret_jwt_key
+FRONTEND_URL=http://localhost:5173
 ```
 
-### **Products**
-```http
-GET    /api/products          # Retrieve all products
-GET    /api/products/featured # Get featured products
-GET    /api/products/:id      # Get single product
-POST   /api/products          # Create new product (admin)
-PUT    /api/products/:id      # Update product (admin)
-DELETE /api/products/:id      # Delete product (admin)
+**laRama_backend_nest/.env**
+```
+PORT=4001
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=LaRama_db_advances
+DB_USER=postgres
+DB_PASSWORD=your_db_password
+ADMIN_KEY=your_admin_header_value
 ```
 
-### **Cart Management**
-```http
-GET    /api/cart              # Get user's cart
-POST   /api/cart/add          # Add item to cart
-PUT    /api/cart/update       # Update cart item quantity
-DELETE /api/cart/remove/:id   # Remove item from cart
-DELETE /api/cart/clear        # Clear entire cart
+**laRama_frontend/.env**
+```
+VITE_API_BASE_URL=http://localhost:5000
+VITE_GRAPHQL_URL=http://localhost:4001/graphql
+VITE_ADMIN_KEY=your_admin_header_value
+VITE_WHATSAPP_NUMBER=whatsapp_number_with_country_code
 ```
 
-### **Orders**
-```http
-GET    /api/orders            # Get user's orders
-POST   /api/orders            # Create new order
-GET    /api/orders/:id        # Get specific order
-PUT    /api/orders/:id        # Update order status (admin)
+## Install & run (PowerShell-ready)
+Run services in three terminals after PostgreSQL is running and `database.sql` has been executed.
+
+1) **Database**
+- Create DB `LaRama_db_advances` in PostgreSQL and run `laRama_backend/database.sql` (pgAdmin or `psql -f database.sql`).
+
+2) **Express REST API (port 5000)**
+```powershell
+cd laRama_backend
+npm install
+npm run dev   # nodemon, or `npm start` for production
 ```
 
-### **Newsletter**
-```http
-POST   /api/newsletter/subscribe    # Subscribe to newsletter
-PUT    /api/newsletter/unsubscribe  # Unsubscribe from newsletter
-```
-
----
-
-## 🎨 Frontend Architecture
-
-### **Component Hierarchy**
-```
-App.jsx
-├── Header.jsx (Navigation, Theme Toggle, User Menu)
-├── Router (React Router DOM)
-│   ├── Public Routes
-│   │   ├── Home.jsx (Landing page with featured products)
-│   │   ├── Products.jsx (Product catalog with filtering)
-│   │   ├── About.jsx (Company story and mission)
-│   │   ├── Contact.jsx (Customer support forms)
-│   │   ├── Auth.jsx (Login/Registration forms)
-│   │   └── Legal Pages (Privacy, Terms, Returns, Shipping)
-│   └── Protected Routes (RequireAuth wrapper)
-│       ├── Dashboard.jsx (User profile and quick actions)
-│       ├── Cart.jsx (Shopping cart management)
-│       └── Customize.jsx (Interactive product designer)
-└── Footer.jsx (Links, Newsletter, Contact info)
-```
-
-### **State Management Strategy**
-- **Global State**: AuthContext for user authentication
-- **Local State**: useState for component-specific data
-- **Persistent State**: localStorage for cart and user preferences
-- **API State**: Real-time data fetching with error handling
-
-### **Routing Strategy**
-- **Public Routes**: Accessible to all users
-- **Protected Routes**: Require authentication
-- **Conditional Rendering**: Based on authentication status
-- **Redirect Logic**: Seamless user experience after login
-
----
-
-## 🗄️ Database Schema
-
-### **Users Table**
-```sql
-users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### **Products Table**
-```sql
-products (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(100) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    description TEXT,
-    image_url VARCHAR(500),
-    is_featured BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### **Cart Items Table**
-```sql
-cart_items (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    customization JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### **Newsletter Subscribers**
-```sql
-newsletter_subscribers (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    source VARCHAR(50),
-    is_active BOOLEAN DEFAULT TRUE,
-    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-## 🔐 Authentication System
-
-### **JWT Implementation**
-- **Token Generation**: Secure JWT creation with expiration
-- **Token Verification**: Middleware-based route protection
-- **Token Refresh**: Automatic session extension
-- **Secure Storage**: HTTPOnly cookies for production deployment
-
-### **Password Security**
-- **Hashing**: bcrypt with salt rounds for password protection
-- **Validation**: Strong password requirements
-- **Reset Mechanism**: Secure password reset workflow
-
-### **Session Management**
-- **Persistent Login**: Remember user preferences
-- **Automatic Logout**: Token expiration handling
-- **Cross-tab Sync**: Consistent authentication state
-
----
-
-## 📱 Responsive Design
-
-### **Breakpoint Strategy**
-- **Mobile First**: Base styles for mobile devices
-- **Tablet**: Enhanced layout for medium screens (768px+)
-- **Desktop**: Full-featured experience (1024px+)
-- **Large Screens**: Optimized for high-resolution displays (1440px+)
-
-### **Component Responsiveness**
-- **Navigation**: Collapsible mobile menu with hamburger icon
-- **Product Grid**: Adaptive columns based on screen size
-- **Forms**: Single-column mobile layout, multi-column desktop
-- **Images**: Responsive sizing with proper aspect ratios
-
----
-
-## 🌙 Theme System
-
-### **Dark/Light Mode**
-- **CSS Variables**: Dynamic color scheme switching
-- **User Preference**: Persistent theme selection
-- **System Integration**: Respect OS dark mode preference
-- **Smooth Transitions**: Animated theme transitions
-
-### **Brand Colors**
-```css
-/* Light Theme */
---color-primary: #5C4B3D;      /* Rich Brown */
---color-accent: #D9A299;       /* Warm Rose */
---color-background: #FAF7F3;   /* Cream White */
---color-surface: #F0E4D3;      /* Light Beige */
-
-/* Dark Theme */
---color-primary: #E8DDD4;      /* Light Brown */
---color-accent: #C4A29B;       /* Muted Rose */
---color-background: #1A1A1A;   /* Dark Gray */
---color-surface: #2D2D2D;      /* Medium Gray */
-```
-
----
-
-## 📧 Newsletter Integration
-
-### **Subscription Management**
-- **Email Validation**: Client and server-side validation
-- **Duplicate Handling**: Graceful handling of existing subscribers
-- **Unsubscribe Flow**: One-click unsubscribe mechanism
-- **Source Tracking**: Track subscription sources for analytics
-
-### **Email Features**
-- **Welcome Series**: Automated onboarding emails
-- **Product Updates**: New collection announcements
-- **Custom Offers**: Personalized discount campaigns
-- **Analytics**: Track open rates and engagement
-
----
-
-## 📞 WhatsApp Business Integration
-
-### **Order Communication**
-- **Formatted Messages**: Professional order summaries
-- **Direct Contact**: One-click WhatsApp communication
-- **Order References**: Unique order tracking numbers
-- **Business Account**: Professional WhatsApp Business integration
-
-### **Message Template**
-```
-Dear LaRama Team,
-
-I would like to request a custom order quote:
-
-*Order Reference:* LRM-CUS-1699632000000
-*Product Category:* Handcrafted Custom Purse
-
-*DETAILED SPECIFICATIONS:*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Bead Type: Crystal
-• Color Preference: Black
-• Chain Type: Metal
-• Size Requirements: Medium
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Could you please provide:
-• Final pricing with customizations
-• Estimated completion timeframe
-• Available delivery options
-
-Thank you for your craftsmanship!
-```
-
----
-
-## 🚀 Deployment Strategy
-
-> **Academic Note**: This project is currently configured for local development and demonstration. The deployment section outlines the production-ready architecture for potential future business implementation.
-
-### **Current Development Setup**
-```bash
-# Local Development (Current)
-Frontend: http://localhost:5173
-Backend: http://localhost:5000
-Database: Local PostgreSQL
-```
-
-### **Production Deployment Plan**
-
-#### **Frontend Deployment (Netlify/Vercel)**
-```bash
-# Build production bundle
+3) **NestJS GraphQL Admin API (port 4001, /graphql)**
+```powershell
+cd laRama_backend_nest
+npm install
 npm run build
-
-# Deploy to Netlify
-npm install -g netlify-cli
-netlify deploy --prod --dir=dist
-
-# Deploy to Vercel (Alternative)
-npm install -g vercel
-vercel --prod
+npm start        # runs dist/main.js
+# or during development
+npm run start:dev
 ```
 
-#### **Backend Deployment (Railway/Heroku)**
-```bash
-# Railway deployment (Recommended)
-npm install -g @railway/cli
-railway login
-railway init
-railway up
-
-# Heroku deployment (Alternative)
-npm install -g heroku
-heroku create larama-api
-git push heroku main
+4) **React + Vite Frontend (port 5173)**
+```powershell
+cd laRama_frontend
+npm install --legacy-peer-deps   # resolves peer-dependency warnings in this Vite/React combo
+npm run dev
 ```
 
-#### **Production Environment Configuration**
-```env
-# Production Configuration Template
-NODE_ENV=production
-DATABASE_URL=postgresql://user:pass@host:port/dbname
-JWT_SECRET=production_jwt_secret_256_bit_key
-FRONTEND_URL=https://your-domain.com
-```
+**Port summary**
+| Service | Port | Notes |
+| --- | --- | --- |
+| React Vite | 5173 | Uses Vite dev server (`npm run dev`) |
+| Express REST | 5000 | Health check at `/` |
+| NestJS GraphQL | 4001 | Endpoint `/graphql`, requires `x-admin-key` |
 
-### **Deployment Benefits for Business**
-- **Global Accessibility**: Customers can access the store 24/7
-- **Professional Presence**: Official website for LaRama business
-- **Scalability**: Handle multiple concurrent users
-- **SEO Optimization**: Search engine discoverability
+## API documentation
+Detailed REST and GraphQL references live in `docs/`:
+- [`docs/API_REST.md`](docs/API_REST.md) – endpoints, auth headers, sample `curl`/PowerShell `Invoke-RestMethod` calls.
+- [`docs/API_GRAPHQL.md`](docs/API_GRAPHQL.md) – schema overview, admin header usage, sample queries/mutations.
 
----
+**Swagger note**: A Swagger UI is not bundled. The REST endpoints are fully documented in `docs/API_REST.md` with ready-to-run examples (acts as the Swagger alternative). Add Swagger later by mounting `swagger-ui-express` under `/api-docs` if desired.
 
-## 🧪 Testing
+### Quick REST outline (customer API)
+- `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/profile`, `GET /api/auth/verify-token`
+- `GET /api/products`, `/categories`, `/featured`, `/:id`
+- `GET /api/cart`, `POST /api/cart/add`, `PUT /api/cart/items/:cart_item_id`, `DELETE /api/cart/items/:cart_item_id`, `DELETE /api/cart/clear`
+- `POST /api/orders`, `GET /api/orders`, `GET /api/orders/:order_id`, `GET /api/orders/stats`
+- `POST /api/newsletter/subscribe`, `POST /api/newsletter/unsubscribe`, `GET /api/newsletter/stats`, `GET /api/newsletter/subscribers`
+- `POST /api/admin/login`, `GET /api/admin/verify`
 
-### **Frontend Testing**
-```bash
-# Unit tests with Jest and React Testing Library
-npm run test
+### Quick GraphQL outline (admin API)
+- Endpoint: `http://localhost:4001/graphql`
+- Required header: `x-admin-key: <ADMIN_KEY>`
+- Queries: `products`, `product(id)`
+- Mutations: `createProduct(input)`, `updateProduct(input)`, `removeProduct(id)`
 
-# E2E tests with Cypress
-npm run test:e2e
+## Database schema
+PostgreSQL schema defined in `laRama_backend/database.sql`:
+- **users** (UUID PK, name, email unique, password hash, timestamps)
+- **products** (UUID PK, name, description, price, `image_url`, category, `stock_quantity`, `is_active`)
+- **carts** (UUID PK, `user_id` unique) and **cart_items** (UUID PK, `cart_id`, `product_id`, quantity)
+- **orders** (UUID PK, `user_id`, `total_amount`, `status`, `shipping_address`) with **order_items** (UUID PK, `order_id`, `product_id`, quantity, price snapshot)
+- **newsletter_subscriptions** (UUID PK, email unique, status)
+- Triggers keep `updated_at` fresh; stock decrements on order creation are handled in `orderController.js`.
 
-# Component tests
-npm run test:components
-```
+## Redux + GraphQL evidence
+- **Redux**: `src/store/products/productsSlice.js` manages product list state with async thunks for load/add/edit/delete.
+- **GraphQL**: `src/api/graphql/products.API.js` + `products.queries.js` use Apollo Client against the NestJS `/graphql` endpoint (protected by `x-admin-key`). Admin UI pages consume these hooks for product CRUD.
+- Coverage satisfies the course requirement of ~25% Redux and ~25% GraphQL usage within the frontend.
 
-### **Backend Testing**
-```bash
-# API endpoint tests with Jest and Supertest
-npm run test
+## Testing & verification checklist
+- React dev server reachable at `http://localhost:5173`.
+- REST health check: `GET http://localhost:5000/` returns JSON status.
+- Products: `GET http://localhost:5000/api/products` returns catalog data.
+- GraphQL: `POST http://localhost:4001/graphql` with `x-admin-key` and `{ products { id name price } }` succeeds.
+- Admin product mutations (create/update/delete) succeed via GraphQL and reflect in Redux state.
+- Cart to order flow: add items, create order via REST, confirm stock decreases and WhatsApp checkout message is generated from cart/order summary.
 
-# Database tests
-npm run test:db
+## Troubleshooting
+- **Peer dependency warnings**: use `npm install --legacy-peer-deps` inside `laRama_frontend`.
+- **Port already in use**: `netstat -ano | findstr :5000` (PowerShell) then `taskkill /PID <pid> /F`.
+- **Remove node_modules on Windows**: `Remove-Item -Recurse -Force node_modules`.
+- **GraphQL unauthorized**: ensure `VITE_ADMIN_KEY` in frontend and `ADMIN_KEY` in Nest `.env` match; header must be `x-admin-key`.
+- **CORS**: Express expects `FRONTEND_URL` (defaults to `http://localhost:3000`); set to `http://localhost:5173` in `.env` during local dev.
 
-# Integration tests
-npm run test:integration
-```
-
----
-
-## 📚 Documentation
-
-### **Code Documentation**
-- **JSDoc Comments**: Comprehensive function documentation
-- **Inline Comments**: Complex logic explanations
-- **Component Props**: TypeScript-style prop documentation
-- **API Documentation**: Endpoint specifications and examples
-
-### **Architecture Documentation**
-- **Database ERD**: Visual database relationship diagrams
-- **Component Tree**: React component hierarchy
-- **API Flow**: Request/response flow documentation
-- **Authentication Flow**: Security implementation details
-
----
-
-## 🤝 Contributing
-
-### **Development Workflow**
-1. **Fork Repository**: Create personal fork of the project
-2. **Feature Branch**: Create branch for new features
-3. **Code Standards**: Follow ESLint and Prettier configurations
-4. **Commit Messages**: Use conventional commit format
-5. **Pull Request**: Submit PR with detailed description
-
-### **Code Standards**
-```bash
-# Linting
-npm run lint
-
-# Formatting
-npm run format
-
-# Type checking
-npm run type-check
-```
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### **Usage Rights**
-- ✅ Commercial use
-- ✅ Modification
-- ✅ Distribution
-- ✅ Private use
-
-### **Limitations**
-- ❌ Liability
-- ❌ Warranty
-
----
-
-## 👥 Team
-
-### **Development Team**
-- **Lead Developer**: [Mohamad Abou Naasse](https://github.com/mohamadAbouNaasse-cs)
-- **University**: University of Balamand (UOB)
-- **Course**: Advances in Computer Science
-- **Project Type**: Full-Stack Web Development E-commerce Platform
-- **Business Owner**: Rama (Sister) - LaRama Handcrafted Business
-
-### **Project Background**
-This project was developed as part of the Advances in Computer Science course at University of Balamand, combining academic excellence with real-world business application for the family handcrafted business "LaRama."
-
-### **Acknowledgments**
-- **University of Balamand Faculty**: For guidance and support in advanced computer science concepts
-- **Open Source Community**: For amazing tools and libraries
-- **Beta Testers**: For valuable feedback and suggestions
-
----
-
-## 📞 Support
-
-### **Technical Support**
-- **Email**: [larama.handmade@gmail.com](mailto:larama.handmade@gmail.com)
-- **WhatsApp**: [+961 71 361 960](https://wa.me/96171361960)
-- **GitHub Issues**: [Report bugs and feature requests](https://github.com/mohamadAbouNaasse-cs/LaRama-Advances/issues)
-
-### **Business Inquiries**
-- **Custom Orders**: Use the in-app customization tool
-- **Wholesale**: Contact via email for bulk pricing
-- **Partnerships**: Business collaboration opportunities
-
-### **Community**
-- **Website**: [LaRama Handcrafted](https://larama-handcrafted.com) *(Coming Soon)*
-- **Social Media**: Follow us for updates and new collections
-- **Newsletter**: Subscribe for exclusive offers and news
-
----
-
-## 🎉 Getting Started
-
-Ready to explore LaRama Handcrafted? Follow the [Quick Start](#-quick-start) guide above to set up your development environment and start contributing to this beautiful e-commerce platform!
-
-**Happy Coding!** 🚀✨
-
----
-
-*Built with ❤️ by Mohamad Abou Naasse for the LaRama family business at University of Balamand*
+## Method-level documentation
+- Backend JS controllers and middleware include rich JSDoc blocks (see `laRama_backend/controllers/*`).
+- NestJS services/resolvers use TypeScript typings; generated schema lives at `laRama_backend_nest/src/schema.gql`.
+- For deeper per-method notes, see the module-specific markdown files in `docs/`.
