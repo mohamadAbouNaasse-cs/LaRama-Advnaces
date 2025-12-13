@@ -284,6 +284,69 @@ Ensure you have the following installed on your system:
 
 ---
 
+## 🧩 How to run backends & frontend (ports and admin key)
+
+This project contains two separate backends (the original Express backend and an isolated Nest backend) and the React frontend. Follow these steps to keep both backends working and to use the Admin GraphQL endpoints.
+
+- Express backend (customer-facing API — no changes made)
+
+   ```powershell
+   cd laRama_backend
+   npm install
+   npm run dev   # or your usual start command (README shows : npm run dev)
+   ```
+
+   - Default port (as documented above): `5000` (check `laRama_backend/.env` and `server.js` if different)
+
+- Nest backend (admin GraphQL API, isolated in `laRama_backend_nest`)
+
+   ```powershell
+   cd laRama_backend_nest
+   npm install
+   npm run start:dev
+   ```
+
+   - Listens on the `PORT` from `laRama_backend_nest/.env` (defaults to `4001`).
+   - GraphQL Playground: http://localhost:4001/graphql
+
+- Frontend (Vite)
+
+   ```powershell
+   cd laRama_frontend
+   npm install
+   npm run dev
+   ```
+
+   - Vite default port: `5173` (open the app at http://localhost:5173)
+
+Admin key header
+
+- The admin-protected GraphQL endpoints require an admin key header named `x-admin-key`.
+- Set the admin key in the Nest backend `.env`:
+
+   ```env
+   # laRama_backend_nest/.env
+   ADMIN_KEY=your_secret_key_here
+   ```
+
+- Set the same value in the frontend `.env` so the Apollo client sends it automatically (Vite):
+
+   ```env
+   # laRama_frontend/.env
+   VITE_ADMIN_KEY=your_secret_key_here
+   ```
+
+- When both servers are running and `VITE_ADMIN_KEY` matches `ADMIN_KEY`, the Admin Products page and GraphQL mutations (create/update/delete) will work.
+
+Ports summary
+
+- Frontend (Vite): `5173` (default)
+- Express backend (customer): `5000` (default in README; verify `laRama_backend/.env`)
+- Nest GraphQL backend (admin): `4001` (configured in `laRama_backend_nest/.env`)
+
+
+---
+
 ## 🎯 Core Functionality
 
 ### **User Journey**
