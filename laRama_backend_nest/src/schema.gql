@@ -2,13 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type ProductType {
-  id: Int!
-  name: String!
-  price: Float!
-  description: String
-}
-
 type ProductEntity {
   id: ID!
   name: String!

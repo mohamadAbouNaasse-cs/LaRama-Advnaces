@@ -4,39 +4,55 @@ Isolated NestJS skeleton for additional backend work for the LaRama project.
 
 This folder is intentionally separate from `laRama_backend/` per project safety rules.
 
-Usage (developer machine):
+## Avoid port conflicts on 4001
 
-1. cd into this folder
-2. run `npm install`
-3. run `npm run start:dev`
+Only **one** Nest process should run at a time. If you suspect a leftover process is blocking `4001`, use:
 
-Quick test checklist
-1. Start the existing Express backend (no changes required) so the customer site continues working.
-2. Start the Nest backend (development):
+```powershell
+netstat -ano | findstr :4001
+taskkill /PID <PID> /F
+```
+
+## Stable single-run workflow (no respawn watchers)
 
 ```powershell
 cd laRama_backend_nest
 npm install
-npm run start:dev
+npm run build
+npm start
 ```
 
-This starts the Nest server using the `.env` `PORT` (defaults to `4001`). Open GraphQL Playground at `http://localhost:4001/graphql`.
+The server binds to `http://127.0.0.1:4001` with CORS opened for Vite (`http://localhost:5173`).
 
-3. In Playground run:
-- `query { products { id name price description } }` to list products
-- `mutation { createProduct(input: { name: "X", price: 9.99 }) { id name } }` to create
-
-4. Start the frontend (`laRama_frontend`) as usual (Vite):
+Verify the port is listening (helpful on Windows):
 
 ```powershell
-cd laRama_frontend
-npm install
-npm run dev
+netstat -ano | findstr :4001
+Test-NetConnection -ComputerName 127.0.0.1 -Port 4001
 ```
 
-5. Open the admin area (`/admin`) and go to the Products page. The page will use the admin GraphQL client and Redux thunks to load products and perform create/edit/delete (the admin key is read from `VITE_ADMIN_KEY` in `laRama_frontend/.env`).
+Run the admin GraphQL query from PowerShell (honors `ADMIN_KEY` from `.env`):
 
-Notes:
-- The Express backend remains unchanged and should continue to serve the customer-facing site.
-- The Nest backend is intentionally isolated in `laRama_backend_nest/` to avoid modifying the existing Express codebase.
-- Ensure both `.env` files use the same `ADMIN_KEY` / `VITE_ADMIN_KEY` for admin operations.
+```powershell
+$body = @{ query = "query { products { id name price description } }" } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:4001/graphql" -Method Post -ContentType "application/json" -Headers @{ "x-admin-key"=$env:ADMIN_KEY } -Body $body
+```
+
+## Full project bring-up (all three folders)
+
+1. **Customer REST backend** (unchanged):
+   ```powershell
+   cd laRama_backend
+   npm install
+   npm run start
+   ```
+2. **Admin GraphQL backend (this folder)** using the commands above (`npm run build` ➜ `npm start`). Change `PORT` in `.env` only if 4001 must be freed; keep frontend env aligned if you change it.
+3. **Frontend (Vite + Redux admin UI + customer pages)**:
+   ```powershell
+   cd laRama_frontend
+   npm install
+   npm run dev
+   ```
+   Visit the admin area at `/admin` and ensure `VITE_ADMIN_KEY` matches the Nest `ADMIN_KEY`.
+
+Suggestions: if you frequently hit port conflicts on 4001, stop lingering Node processes with the `taskkill` command above or temporarily set another `PORT` in `.env` (remember to update the frontend admin client to the same port).
