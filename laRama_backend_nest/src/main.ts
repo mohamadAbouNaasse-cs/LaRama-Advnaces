@@ -9,8 +9,8 @@ dotenv.config({ path: join(process.cwd(), '.env') });
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = parseInt(process.env.PORT || '4001', 10);
-  await app.listen(port);
-  console.log(`laRama_backend_nest listening on http://localhost:${port}`);
+  await app.listen(port, '127.0.0.1');
+  console.log(`laRama_backend_nest listening on http://127.0.0.1:${port}`);
 }
 
 bootstrap();
